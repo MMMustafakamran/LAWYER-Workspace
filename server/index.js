@@ -5,7 +5,13 @@ const path = require('path');
 
 dotenv.config({ path: './database_env.env' });
 
+const http = require('http');
+const { initSocket } = require('./src/socket/socket');
+
 const app = express();
+const server = http.createServer(app);
+const io = initSocket(server);
+
 const PORT = process.env.PORT || 5000;
 
 const authRoutes = require('./src/routes/authRoutes');
@@ -20,11 +26,14 @@ app.use('/api/auth', authRoutes);
 app.use('/api/cases', caseRoutes);
 app.use('/api/laws', require('./src/routes/lawRoutes'));
 app.use('/api/lawyers', require('./src/routes/lawyerRoutes'));
+app.use('/api/marketplace', require('./src/routes/marketplaceRoutes'));
+app.use('/api/chat', require('./src/routes/chatRoutes'));
+app.use('/api/polls', require('./src/routes/pollRoutes'));
 
 app.get('/', (req, res) => {
     res.send('Lawyer App API is running');
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

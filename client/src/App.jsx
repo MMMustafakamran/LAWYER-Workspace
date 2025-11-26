@@ -11,6 +11,9 @@ import CaseDetails from './pages/CaseDetails';
 import LegalResearch from './pages/LegalResearch';
 import LawyerDirectory from './pages/LawyerDirectory';
 import LawyerProfile from './pages/LawyerProfile';
+import Marketplace from './pages/Marketplace';
+import Chat from './pages/Chat';
+import Elections from './pages/Elections';
 
 function App() {
   return (
@@ -29,6 +32,9 @@ function App() {
               <Route path="/research" element={<LegalResearch />} />
               <Route path="/lawyers" element={<LawyerDirectory />} />
               <Route path="/lawyers/:id" element={<LawyerProfile />} />
+              <Route path="/marketplace" element={<Marketplace />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/elections" element={<Elections />} />
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
             </Route>
           </Route>

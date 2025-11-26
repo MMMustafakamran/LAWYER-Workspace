@@ -1,6 +1,6 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User, Briefcase, Home, BookOpen } from 'lucide-react';
+import { LogOut, User, Briefcase, Home, BookOpen, ShoppingBag, MessageSquare, Vote } from 'lucide-react';
 
 export default function Layout() {
     const { user, logout } = useAuth();
@@ -36,6 +36,18 @@ export default function Layout() {
                                 <Link to="/lawyers" className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-300 hover:text-white hover:border-accent-500 transition-colors">
                                     <User className="w-4 h-4 mr-2" />
                                     Directory
+                                </Link>
+                                <Link to="/marketplace" className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-300 hover:text-white hover:border-accent-500 transition-colors">
+                                    <ShoppingBag className="w-4 h-4 mr-2" />
+                                    Market
+                                </Link>
+                                <Link to="/chat" className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-300 hover:text-white hover:border-accent-500 transition-colors">
+                                    <MessageSquare className="w-4 h-4 mr-2" />
+                                    Chat
+                                </Link>
+                                <Link to="/elections" className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-300 hover:text-white hover:border-accent-500 transition-colors">
+                                    <Vote className="w-4 h-4 mr-2" />
+                                    Elections
                                 </Link>
                             </div>
                         </div>
