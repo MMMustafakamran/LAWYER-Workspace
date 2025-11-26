@@ -19,6 +19,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/cases', caseRoutes);
 app.use('/api/laws', require('./src/routes/lawRoutes'));
+app.use('/api/lawyers', require('./src/routes/lawyerRoutes'));
 
 app.get('/', (req, res) => {
     res.send('Lawyer App API is running');

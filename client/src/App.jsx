@@ -9,6 +9,8 @@ import CaseList from './components/CaseList';
 import CreateCase from './pages/CreateCase';
 import CaseDetails from './pages/CaseDetails';
 import LegalResearch from './pages/LegalResearch';
+import LawyerDirectory from './pages/LawyerDirectory';
+import LawyerProfile from './pages/LawyerProfile';
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
               <Route path="/cases/new" element={<CreateCase />} />
               <Route path="/cases/:id" element={<CaseDetails />} />
               <Route path="/research" element={<LegalResearch />} />
+              <Route path="/lawyers" element={<LawyerDirectory />} />
+              <Route path="/lawyers/:id" element={<LawyerProfile />} />
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
             </Route>
           </Route>

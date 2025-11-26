@@ -33,6 +33,10 @@ export default function Layout() {
                                     <BookOpen className="w-4 h-4 mr-2" />
                                     Research
                                 </Link>
+                                <Link to="/lawyers" className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-300 hover:text-white hover:border-accent-500 transition-colors">
+                                    <User className="w-4 h-4 mr-2" />
+                                    Directory
+                                </Link>
                             </div>
                         </div>
                         <div className="flex items-center">
