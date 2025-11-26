@@ -32,12 +32,12 @@ export default function LegalResearch() {
     }, [query, category]);
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-primary-900">Legal Research Hub</h1>
-                    <p className="text-slate-600 mt-1">Access comprehensive legal resources and case law</p>
+                    <h1 className="text-2xl font-bold text-primary-900">Legal Research Hub</h1>
+                    <p className="text-slate-600 text-sm">Access comprehensive legal resources and case law</p>
                 </div>
                 <button
                     onClick={() => axios.post('/laws/seed').then(() => fetchLaws())}
@@ -47,44 +47,36 @@ export default function LegalResearch() {
                 </button>
             </div>
 
-            {/* Search Section */}
-            <div className="card p-8 shadow-lg">
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2 bg-primary-100 rounded-lg">
-                        <Scale className="w-5 h-5 text-primary-700" />
+            {/* Search Bar - Matching Directory Style */}
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col md:flex-row gap-4">
+                <div className="relative flex-grow">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Search className="h-5 w-5 text-gray-400" />
                     </div>
-                    <h2 className="text-lg font-semibold text-primary-900">Search Legal Database</h2>
+                    <input
+                        type="text"
+                        className="input-field pl-10"
+                        placeholder="Search laws, acts, or sections..."
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                    />
                 </div>
-                <div className="flex flex-col md:flex-row gap-4">
-                    <div className="relative flex-grow">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <Search className="h-5 w-5 text-slate-400" />
+                <div className="w-full md:w-56">
+                    <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Filter className="h-5 w-5 text-gray-400" />
                         </div>
-                        <input
-                            type="text"
-                            className="input-field pl-12 py-3 text-base"
-                            placeholder="Search laws, acts, sections, or keywords..."
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                        />
-                    </div>
-                    <div className="w-full md:w-56">
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <Filter className="h-5 w-5 text-slate-400" />
-                            </div>
-                            <select
-                                className="input-field pl-12 py-3 text-base"
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
-                            >
-                                <option value="All">All Categories</option>
-                                <option value="Criminal">Criminal</option>
-                                <option value="Civil">Civil</option>
-                                <option value="Corporate">Corporate</option>
-                                <option value="Family">Family</option>
-                            </select>
-                        </div>
+                        <select
+                            className="input-field pl-10"
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                        >
+                            <option value="All">All Categories</option>
+                            <option value="Criminal">Criminal</option>
+                            <option value="Civil">Civil</option>
+                            <option value="Corporate">Corporate</option>
+                            <option value="Family">Family</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -113,9 +105,9 @@ export default function LegalResearch() {
                                 <div className="p-6 flex flex-col h-full">
                                     <div className="flex items-start justify-between mb-3">
                                         <span className={`px-3 py-1 text-xs font-semibold rounded-full ${law.category === 'Criminal' ? 'bg-red-100 text-red-700' :
-                                                law.category === 'Civil' ? 'bg-blue-100 text-blue-700' :
-                                                    law.category === 'Corporate' ? 'bg-green-100 text-green-700' :
-                                                        'bg-purple-100 text-purple-700'
+                                            law.category === 'Civil' ? 'bg-blue-100 text-blue-700' :
+                                                law.category === 'Corporate' ? 'bg-green-100 text-green-700' :
+                                                    'bg-purple-100 text-purple-700'
                                             }`}>
                                             {law.category}
                                         </span>
@@ -166,9 +158,9 @@ export default function LegalResearch() {
                                         <Scale className="w-6 h-6 text-primary-900" />
                                     </div>
                                     <span className={`px-3 py-1 text-xs font-semibold rounded-full ${selectedLaw.category === 'Criminal' ? 'bg-red-100 text-red-700' :
-                                            selectedLaw.category === 'Civil' ? 'bg-blue-100 text-blue-700' :
-                                                selectedLaw.category === 'Corporate' ? 'bg-green-100 text-green-700' :
-                                                    'bg-purple-100 text-purple-700'
+                                        selectedLaw.category === 'Civil' ? 'bg-blue-100 text-blue-700' :
+                                            selectedLaw.category === 'Corporate' ? 'bg-green-100 text-green-700' :
+                                                'bg-purple-100 text-purple-700'
                                         }`}>
                                         {selectedLaw.category}
                                     </span>

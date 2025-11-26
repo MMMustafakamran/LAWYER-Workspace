@@ -26,8 +26,8 @@ export default function CaseList() {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center border-b border-gray-200 pb-4">
-                <h2 className="text-3xl font-bold text-primary-900 font-serif">My Cases</h2>
+            <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-primary-900">My Cases</h2>
                 <Link
                     to="/cases/new"
                     className="btn-primary"

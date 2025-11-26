@@ -37,7 +37,7 @@ export default function LawyerDirectory() {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-3xl font-bold text-primary-900 font-serif">Find a Lawyer</h1>
+            <h1 className="text-2xl font-bold text-primary-900">Find a Lawyer</h1>
 
             {/* Filters */}
             <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col md:flex-row gap-4">

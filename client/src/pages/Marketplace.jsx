@@ -39,7 +39,7 @@ export default function Marketplace() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-primary-900 font-serif">Legal Marketplace</h1>
+                <h1 className="text-2xl font-bold text-primary-900">Legal Marketplace</h1>
                 <button
                     onClick={() => setShowForm(!showForm)}
                     className="btn-primary flex items-center"
@@ -50,8 +50,8 @@ export default function Marketplace() {
             </div>
 
             {showForm && (
-                <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 animate-fade-in">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">List New Item</h3>
+                <div className="card p-5">
+                    <h3 className="text-lg font-semibold text-primary-900 mb-4">List New Item</h3>
                     <form onSubmit={handleCreate} className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Item Name</label>
