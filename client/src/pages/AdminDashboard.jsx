@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from '../api/axios';
 import { Users, Briefcase, BookOpen, Vote, Shield } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState({
@@ -26,6 +27,23 @@ export default function AdminDashboard() {
         };
         fetchStats();
     }, []);
+
+    // Mock data for charts
+    const userGrowthData = [
+        { name: 'Jan', users: 4 },
+        { name: 'Feb', users: 7 },
+        { name: 'Mar', users: 12 },
+        { name: 'Apr', users: 18 },
+        { name: 'May', users: 25 },
+        { name: 'Jun', users: stats.users || 30 },
+    ];
+
+    const caseStatusData = [
+        { name: 'Open', value: stats.cases ? Math.floor(stats.cases * 0.7) : 10 },
+        { name: 'Closed', value: stats.cases ? Math.ceil(stats.cases * 0.3) : 5 },
+    ];
+
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
     const StatCard = ({ title, value, icon: Icon, color }) => (
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex items-center">
@@ -76,6 +94,54 @@ export default function AdminDashboard() {
                     icon={BookOpen}
                     color="bg-yellow-500"
                 />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* User Growth Chart */}
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">User Growth</h3>
+                    <div className="h-64">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                                data={userGrowthData}
+                                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey="users" fill="#3b82f6" />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Case Status Chart */}
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Case Status</h3>
+                    <div className="h-64">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={caseStatusData}
+                                    cx="50%"
+                                    cy="50%"
+                                    labelLine={false}
+                                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                    outerRadius={80}
+                                    fill="#8884d8"
+                                    dataKey="value"
+                                >
+                                    {caseStatusData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
             </div>
 
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
