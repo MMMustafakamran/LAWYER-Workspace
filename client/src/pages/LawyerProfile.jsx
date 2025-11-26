@@ -40,9 +40,18 @@ export default function LawyerProfile() {
                                 {lawyer.name.charAt(0)}
                             </div>
                         </div>
-                        <button className="btn-primary shadow-lg">
-                            Contact Lawyer
-                        </button>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => navigate(`/chat?receiverId=${lawyer.userId}`)}
+                                className="btn-primary shadow-lg flex items-center"
+                            >
+                                <Mail className="w-4 h-4 mr-2" />
+                                Message
+                            </button>
+                            <button className="btn-secondary shadow-lg">
+                                Contact Info
+                            </button>
+                        </div>
                     </div>
 
                     <div>

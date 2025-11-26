@@ -29,6 +29,8 @@ app.use('/api/lawyers', require('./src/routes/lawyerRoutes'));
 app.use('/api/marketplace', require('./src/routes/marketplaceRoutes'));
 app.use('/api/chat', require('./src/routes/chatRoutes'));
 app.use('/api/polls', require('./src/routes/pollRoutes'));
+app.use('/api/notifications', require('./src/routes/notificationRoutes'));
+app.use('/api/admin', require('./src/routes/adminRoutes'));
 
 app.get('/', (req, res) => {
     res.send('Lawyer App API is running');

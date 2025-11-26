@@ -1,6 +1,7 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LogOut, User, Briefcase, Home, BookOpen, ShoppingBag, MessageSquare, Vote } from 'lucide-react';
+import NotificationBell from '../components/NotificationBell';
 
 export default function Layout() {
     const { user, logout } = useAuth();
@@ -51,17 +52,21 @@ export default function Layout() {
                                 </Link>
                             </div>
                         </div>
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                                <span className="text-sm text-gray-300 mr-4">Welcome, {user?.name}</span>
-                                <button
-                                    onClick={handleLogout}
-                                    className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-900 bg-accent-500 shadow-sm hover:bg-accent-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500 transition-colors"
-                                >
-                                    <LogOut className="w-4 h-4 mr-2" />
-                                    Logout
-                                </button>
+                        <div className="flex items-center space-x-4">
+                            <NotificationBell />
+                            <div className="flex items-center space-x-2 text-sm font-medium text-gray-300">
+                                <div className="h-8 w-8 rounded-full bg-primary-700 flex items-center justify-center text-white font-bold">
+                                    {user?.name?.charAt(0) || 'U'}
+                                </div>
+                                <span className="hidden md:block">{user?.name}</span>
                             </div>
+                            <button
+                                onClick={handleLogout}
+                                className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-900 bg-accent-500 shadow-sm hover:bg-accent-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500 transition-colors"
+                            >
+                                <LogOut className="w-4 h-4 mr-2" />
+                                Logout
+                            </button>
                         </div>
                     </div>
                 </div>

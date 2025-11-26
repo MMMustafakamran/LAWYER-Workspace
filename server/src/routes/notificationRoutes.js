@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { getMessages, getConversations } = require('../controllers/chatController');
+const { getNotifications, markAsRead } = require('../controllers/notificationController');
 const authenticateToken = require('../middleware/authMiddleware');
 
 router.use(authenticateToken);
 
-router.get('/conversations', getConversations);
-router.get('/:barId', getMessages);
+router.get('/', getNotifications);
+router.put('/:id/read', markAsRead);
 
 module.exports = router;

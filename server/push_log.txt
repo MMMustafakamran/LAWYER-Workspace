@@ -1,0 +1,5 @@
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "postgres", schema "public" at "localhost:51213"
+
+Error: P1010: User `` was denied access on the database `postgres.public`
