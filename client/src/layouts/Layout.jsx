@@ -1,6 +1,6 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User, Briefcase, Home } from 'lucide-react';
+import { LogOut, User, Briefcase, Home, BookOpen } from 'lucide-react';
 
 export default function Layout() {
     const { user, logout } = useAuth();
@@ -28,6 +28,10 @@ export default function Layout() {
                                 <Link to="/cases" className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-300 hover:text-white hover:border-accent-500 transition-colors">
                                     <Briefcase className="w-4 h-4 mr-2" />
                                     Cases
+                                </Link>
+                                <Link to="/research" className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-300 hover:text-white hover:border-accent-500 transition-colors">
+                                    <BookOpen className="w-4 h-4 mr-2" />
+                                    Research
                                 </Link>
                             </div>
                         </div>

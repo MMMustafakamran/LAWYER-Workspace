@@ -8,6 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import CaseList from './components/CaseList';
 import CreateCase from './pages/CreateCase';
 import CaseDetails from './pages/CaseDetails';
+import LegalResearch from './pages/LegalResearch';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
               <Route path="/cases" element={<CaseList />} />
               <Route path="/cases/new" element={<CreateCase />} />
               <Route path="/cases/:id" element={<CaseDetails />} />
+              <Route path="/research" element={<LegalResearch />} />
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
             </Route>
           </Route>

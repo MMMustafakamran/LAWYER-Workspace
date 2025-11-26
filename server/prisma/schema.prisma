@@ -36,6 +36,21 @@ model User {
   items         MarketplaceItem[]
   sentMessages  Chat[]
   votes         Vote[]
+  lawyerProfile LawyerProfile?
+}
+
+model LawyerProfile {
+  id             Int      @id @default(autoincrement())
+  userId         Int      @unique
+  specialization String?
+  experience     Int?
+  bio            String?  @db.Text
+  location       String?
+  hourlyRate     Float?
+  rating         Float    @default(0.0)
+  reviewCount    Int      @default(0)
+  
+  user           User     @relation(fields: [userId], references: [id])
 }
 
 model Case {
@@ -110,4 +125,14 @@ model Vote {
   user User @relation(fields: [userId], references: [id])
 
   @@unique([pollId, userId])
+}
+
+model Law {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  category    String
+  content     String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
