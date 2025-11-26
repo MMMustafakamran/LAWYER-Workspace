@@ -28,9 +28,9 @@ export default function CreateCase() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Create New Case</h1>
-            <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow">
+        <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <h1 className="text-3xl font-bold text-primary-900 mb-8 font-serif border-b pb-4">Create New Case</h1>
+            <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-lg shadow-lg border border-gray-200">
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Case Title</label>
                     <input
@@ -39,7 +39,8 @@ export default function CreateCase() {
                         value={formData.title}
                         onChange={handleChange}
                         required
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="input-field mt-1"
+                        placeholder="e.g. State vs. John Doe"
                     />
                 </div>
 
@@ -50,7 +51,8 @@ export default function CreateCase() {
                         name="caseNumber"
                         value={formData.caseNumber}
                         onChange={handleChange}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="input-field mt-1"
+                        placeholder="e.g. CR-2023-001"
                     />
                 </div>
 
@@ -63,7 +65,8 @@ export default function CreateCase() {
                             value={formData.court}
                             onChange={handleChange}
                             required
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            className="input-field mt-1"
+                            placeholder="e.g. High Court"
                         />
                     </div>
 
@@ -73,7 +76,7 @@ export default function CreateCase() {
                             name="type"
                             value={formData.type}
                             onChange={handleChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            className="input-field mt-1"
                         >
                             <option>Civil</option>
                             <option>Criminal</option>
@@ -90,21 +93,21 @@ export default function CreateCase() {
                         name="nextHearingDate"
                         value={formData.nextHearingDate}
                         onChange={handleChange}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="input-field mt-1"
                     />
                 </div>
 
-                <div className="flex justify-end">
+                <div className="flex justify-end pt-4 border-t border-gray-100">
                     <button
                         type="button"
                         onClick={() => navigate('/cases')}
-                        className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-3"
+                        className="btn-secondary mr-3"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
-                        className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        className="btn-primary"
                     >
                         Create Case
                     </button>

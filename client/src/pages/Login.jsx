@@ -20,9 +20,12 @@ export default function Login() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100">
-            <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
-                <h2 className="text-2xl font-bold text-center">Login to Lawyer App</h2>
+        <div className="flex min-h-screen items-center justify-center bg-primary-50">
+            <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-xl border-t-4 border-primary-900">
+                <div className="text-center">
+                    <h2 className="text-3xl font-bold text-primary-900 font-serif">Lawyer Workspace</h2>
+                    <p className="mt-2 text-sm text-gray-600">Sign in to your account</p>
+                </div>
                 {error && <p className="text-red-500 text-center">{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -31,7 +34,7 @@ export default function Login() {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
+                            className="input-field mt-1"
                             required
                         />
                     </div>
@@ -41,19 +44,19 @@ export default function Login() {
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
+                            className="input-field mt-1"
                             required
                         />
                     </div>
                     <button
                         type="submit"
-                        className="w-full px-4 py-2 font-bold text-white bg-indigo-600 rounded hover:bg-indigo-700"
+                        className="w-full btn-primary justify-center"
                     >
                         Login
                     </button>
                 </form>
-                <p className="text-center text-sm">
-                    Don't have an account? <Link to="/register" className="text-indigo-600 hover:underline">Register</Link>
+                <p className="text-center text-sm text-gray-600">
+                    Don't have an account? <Link to="/register" className="text-primary-700 hover:text-primary-900 font-medium hover:underline">Register</Link>
                 </p>
             </div>
         </div>
