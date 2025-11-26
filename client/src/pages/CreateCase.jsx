@@ -17,19 +17,28 @@ export default function CreateCase() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const [error, setError] = useState('');
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
         try {
-            await createCase(formData);
+            const payload = {
+                ...formData,
+                nextHearingDate: formData.nextHearingDate || null
+            };
+            await createCase(payload);
             navigate('/cases');
-        } catch (error) {
-            console.error('Failed to create case', error);
+        } catch (err) {
+            console.error('Failed to create case', err);
+            setError(err.response?.data?.message || 'Failed to create case. Please try again.');
         }
     };
 
     return (
         <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
             <h1 className="text-3xl font-bold text-primary-900 mb-8 font-serif border-b pb-4">Create New Case</h1>
+            {error && <div className="mb-4 p-4 bg-red-50 text-red-700 border border-red-200 rounded-md">{error}</div>}
             <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-lg shadow-lg border border-gray-200">
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Case Title</label>

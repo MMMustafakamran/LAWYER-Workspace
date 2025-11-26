@@ -1,25 +1,26 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getCaseById } from '../api/cases';
-import { ArrowLeft, Calendar, FileText, User } from 'lucide-react';
+import { ArrowLeft, FileText } from 'lucide-react';
+import DocumentUpload from '../components/DocumentUpload';
 
 export default function CaseDetails() {
     const { id } = useParams();
     const [caseItem, setCaseItem] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchCase = async () => {
-            try {
-                const data = await getCaseById(id);
-                setCaseItem(data);
-            } catch (error) {
-                console.error('Failed to fetch case details', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchCase = async () => {
+        try {
+            const data = await getCaseById(id);
+            setCaseItem(data);
+        } catch (error) {
+            console.error('Failed to fetch case details', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchCase();
     }, [id]);
 
@@ -73,28 +74,39 @@ export default function CaseDetails() {
                 </div>
             </div>
 
-            <div className="bg-white shadow-lg sm:rounded-lg border border-gray-200">
-                <div className="px-4 py-5 sm:p-6">
-                    <h3 className="text-lg leading-6 font-medium text-primary-900 font-serif">Documents</h3>
-                    <div className="mt-5">
-                        {caseItem.documents && caseItem.documents.length > 0 ? (
-                            <ul className="divide-y divide-gray-200">
-                                {caseItem.documents.map((doc) => (
-                                    <li key={doc.id} className="py-3 flex justify-between items-center">
-                                        <div className="flex items-center">
-                                            <FileText className="h-5 w-5 text-gray-400 mr-2" />
-                                            <span className="text-sm font-medium text-gray-900">Document #{doc.id}</span>
-                                        </div>
-                                        <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-900 text-sm font-medium">
-                                            View
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p className="text-sm text-gray-500">No documents uploaded yet.</p>
-                        )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white shadow-lg sm:rounded-lg border border-gray-200">
+                    <div className="px-4 py-5 sm:p-6">
+                        <h3 className="text-lg leading-6 font-medium text-primary-900 font-serif">Documents</h3>
+                        <div className="mt-5">
+                            {caseItem.documents && caseItem.documents.length > 0 ? (
+                                <ul className="divide-y divide-gray-200">
+                                    {caseItem.documents.map((doc) => (
+                                        <li key={doc.id} className="py-3 flex justify-between items-center">
+                                            <div className="flex items-center">
+                                                <FileText className="h-5 w-5 text-gray-400 mr-2" />
+                                                <span className="text-sm font-medium text-gray-900">Document #{doc.id}</span>
+                                            </div>
+                                            <a
+                                                href={`http://localhost:5000${doc.fileUrl}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-primary-600 hover:text-primary-900 text-sm font-medium"
+                                            >
+                                                View
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-sm text-gray-500">No documents uploaded yet.</p>
+                            )}
+                        </div>
                     </div>
+                </div>
+
+                <div>
+                    <DocumentUpload caseId={id} onUploadSuccess={fetchCase} />
                 </div>
             </div>
         </div>
