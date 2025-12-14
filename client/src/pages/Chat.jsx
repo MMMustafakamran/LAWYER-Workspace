@@ -128,30 +128,44 @@ export default function Chat() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
+    const [chatType, setChatType] = useState('private'); // 'private' or 'group'
+
+    // ... (keep initChat useEffect)
+
     const handleSendMessage = (e) => {
         e.preventDefault();
         if (!newMessage.trim() || !socket || !activeRoom) return;
 
-        // Determine receiver ID
         let currentReceiverId = null;
-        if (activeUser) {
-            currentReceiverId = activeUser.id;
-        } else if (receiverId) {
-            currentReceiverId = parseInt(receiverId);
+        let roomId = activeRoom;
+
+        if (chatType === 'private') {
+            if (activeUser) {
+                currentReceiverId = activeUser.id;
+            } else if (receiverId) {
+                currentReceiverId = parseInt(receiverId);
+            }
+        } else {
+            // Group chat
+            // roomId is already the barId from activeRoom
+            currentReceiverId = null; // No single receiver in group
         }
 
         const messageData = {
             senderId: user.id,
             receiverId: currentReceiverId,
             message: newMessage,
-            barId: activeRoom,
+            barId: roomId,
             sender: { name: user.name }
         };
 
         socket.emit('send_message', messageData);
         setMessages(prev => [...prev, { ...messageData, createdAt: new Date().toISOString() }]);
         setNewMessage('');
-        fetchConversations();
+
+        if (chatType === 'private') {
+            fetchConversations();
+        }
     };
 
     const handleSelectConversation = (conv) => {
@@ -159,38 +173,76 @@ export default function Chat() {
         setActiveUser(conv.otherUser);
     };
 
+    const handleJoinBarRoom = () => {
+        if (!user.barId) {
+            alert("You are not associated with any Bar Association.");
+            return;
+        }
+        setChatType('group');
+        setActiveRoom(user.barId);
+        setActiveUser({ name: `${user.barId} Room` }); // Mock user object for header
+    };
+
     return (
         <div className="flex h-[calc(100vh-8rem)] bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
             {/* Sidebar */}
             <div className="w-1/3 border-r border-gray-200 flex flex-col">
                 <div className="p-4 bg-gray-50 border-b border-gray-200">
-                    <h2 className="font-bold text-gray-700 flex items-center">
-                        <MessageSquare className="w-5 h-5 mr-2" />
-                        Messages
-                    </h2>
+                    <div className="flex space-x-2 bg-gray-200 p-1 rounded-lg">
+                        <button
+                            onClick={() => { setChatType('private'); setActiveRoom(null); }}
+                            className={`flex-1 flex items-center justify-center py-1.5 text-sm font-medium rounded-md transition-colors ${chatType === 'private' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            Messages
+                        </button>
+                        <button
+                            onClick={handleJoinBarRoom}
+                            className={`flex-1 flex items-center justify-center py-1.5 text-sm font-medium rounded-md transition-colors ${chatType === 'group' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            Bar Room
+                        </button>
+                    </div>
                 </div>
                 <div className="flex-grow overflow-y-auto">
-                    {conversations.length === 0 ? (
-                        <p className="p-4 text-sm text-gray-500 text-center">No conversations yet.</p>
-                    ) : (
-                        conversations.map((conv) => (
-                            <div
-                                key={conv.roomId}
-                                onClick={() => handleSelectConversation(conv)}
-                                className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${activeRoom === conv.roomId ? 'bg-primary-50 border-l-4 border-l-primary-600' : ''
-                                    }`}
-                            >
-                                <div className="flex justify-between items-start mb-1">
-                                    <span className="font-bold text-gray-900 text-sm">
-                                        {conv.otherUser?.name || 'Unknown User'}
-                                    </span>
-                                    <span className="text-xs text-gray-400">
-                                        {new Date(conv.timestamp).toLocaleDateString()}
-                                    </span>
+                    {chatType === 'group' ? (
+                        <div className="p-4">
+                            {user.barId ? (
+                                <div className={`p-4 border rounded-lg cursor-pointer bg-primary-50 border-l-4 border-l-primary-600`}>
+                                    <h3 className="font-bold text-primary-900">{user.barId} Room</h3>
+                                    <p className="text-xs text-gray-500 mt-1">Official Bar Association Group</p>
                                 </div>
-                                <p className="text-xs text-gray-500 truncate">{conv.lastMessage}</p>
-                            </div>
-                        ))
+                            ) : (
+                                <div className="text-center text-gray-500 text-sm mt-4">
+                                    You are not assigned to a Bar Association.
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        conversations.length === 0 ? (
+                            <p className="p-4 text-sm text-gray-500 text-center">No conversations yet.</p>
+                        ) : (
+                            conversations.map((conv) => (
+                                <div
+                                    key={conv.roomId}
+                                    onClick={() => handleSelectConversation(conv)}
+                                    className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${activeRoom === conv.roomId ? 'bg-primary-50 border-l-4 border-l-primary-600' : ''
+                                        }`}
+                                >
+
+                                    <div className="flex justify-between items-start mb-1">
+                                        <span className="font-bold text-gray-900 text-sm">
+                                            {conv.otherUser?.name || 'Unknown User'}
+                                        </span>
+                                        <span className="text-xs text-gray-400">
+                                            {new Date(conv.timestamp).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-gray-500 truncate">{conv.lastMessage}</p>
+                                </div>
+                            ))
+                        )
                     )}
                 </div>
             </div>

@@ -1,6 +1,7 @@
+import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Briefcase, Home, BookOpen, ShoppingBag, MessageSquare, Vote, Menu, X, Scale, User } from 'lucide-react';
+import { LogOut, Briefcase, Home, BookOpen, ShoppingBag, MessageSquare, Vote, Menu, X, Scale, User, Globe } from 'lucide-react';
 import NotificationBell from '../components/NotificationBell';
 import { useState } from 'react';
 
@@ -9,40 +10,50 @@ export default function Layout() {
     const navigate = useNavigate();
     const location = useLocation();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const { t, i18n } = useTranslation();
 
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
 
+    const toggleLanguage = () => {
+        const newLang = i18n.language === 'en' ? 'ur' : 'en';
+        i18n.changeLanguage(newLang);
+    };
+
     const isActive = (path) => location.pathname === path;
 
     const navItems = [
-        { to: '/dashboard', icon: Home, label: 'Dashboard' },
-        { to: '/cases', icon: Briefcase, label: 'Cases' },
-        { to: '/research', icon: BookOpen, label: 'Research' },
-        { to: '/lawyers', icon: User, label: 'Directory' },
-        { to: '/marketplace', icon: ShoppingBag, label: 'Market' },
-        { to: '/chat', icon: MessageSquare, label: 'Chat' },
-        { to: '/elections', icon: Vote, label: 'Elections' },
+        { to: '/dashboard', icon: Home, label: t('dashboard') },
+        { to: '/cases', icon: Briefcase, label: t('cases') },
+        { to: '/research', icon: BookOpen, label: t('research') },
+        { to: '/lawyers', icon: User, label: t('lawyers') },
+        { to: '/marketplace', icon: ShoppingBag, label: t('marketplace') },
+        { to: '/chat', icon: MessageSquare, label: t('chat') },
+        { to: '/elections', icon: Vote, label: t('elections') },
     ];
+
+    if (user?.role && ['SYSTEM_ADMIN', 'SUPER_ADMIN'].includes(user.role)) {
+        navItems.push({ to: '/admin', icon: Scale, label: t('admin') });
+    }
 
     const SidebarLink = ({ to, icon: Icon, label }) => (
         <Link
             to={to}
             onClick={() => setIsSidebarOpen(false)}
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${isActive(to)
-                    ? 'bg-primary-800 text-white shadow-sm'
-                    : 'text-primary-200 hover:bg-primary-800 hover:text-white'
+                ? 'bg-primary-800 text-white shadow-sm'
+                : 'text-primary-200 hover:bg-primary-800 hover:text-white'
                 }`}
         >
             <Icon className={`w-5 h-5 ${isActive(to) ? 'text-accent-400' : 'text-primary-300 group-hover:text-accent-400'}`} />
-            <span className="font-medium">{label}</span>
+            <span className={`font-medium ${i18n.language === 'ur' ? 'font-serif text-lg' : ''}`}>{label}</span>
         </Link>
     );
 
     return (
-        <div className="min-h-screen bg-slate-50 flex">
+        <div className={`min-h-screen bg-slate-50 flex ${i18n.language === 'ur' ? 'font-serif' : ''} text-slate-900`}>
             {/* Sidebar */}
             <aside className={`
                 fixed inset-y-0 left-0 z-50 w-64 bg-primary-900 transform transition-transform duration-300 ease-in-out
@@ -119,13 +130,21 @@ export default function Layout() {
 
                             {/* Right Section */}
                             <div className="flex items-center gap-4">
+                                <button
+                                    onClick={toggleLanguage}
+                                    className="btn-secondary flex items-center px-3 py-1.5 text-sm"
+                                    title="Switch Language"
+                                >
+                                    <Globe className="w-4 h-4 mr-2" />
+                                    {i18n.language === 'en' ? 'Urdu' : 'English'}
+                                </button>
                                 <NotificationBell />
                                 <button
                                     onClick={handleLogout}
                                     className="btn-ghost text-sm"
                                 >
                                     <LogOut className="w-4 h-4 mr-2" />
-                                    Logout
+                                    {t('logout')}
                                 </button>
                             </div>
                         </div>

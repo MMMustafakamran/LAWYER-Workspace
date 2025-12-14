@@ -39,6 +39,22 @@ model User {
   votes         Vote[]
   notifications Notification[]
   lawyerProfile LawyerProfile?
+  appointmentsAsLawyer Appointment[] @relation("LawyerAppointments")
+  appointmentsAsClient Appointment[] @relation("ClientAppointments")
+}
+
+model Appointment {
+  id        Int      @id @default(autoincrement())
+  lawyerId  Int
+  clientId  Int
+  date      DateTime
+  status    String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lawyer User @relation("LawyerAppointments", fields: [lawyerId], references: [id])
+  client User @relation("ClientAppointments", fields: [clientId], references: [id])
 }
 
 model LawyerProfile {

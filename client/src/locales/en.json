@@ -1,0 +1,16 @@
+{
+    "dashboard": "Dashboard",
+    "cases": "Cases",
+    "chat": "Chat",
+    "marketplace": "Marketplace",
+    "lawyers": "Lawyer Directory",
+    "research": "Legal Research",
+    "elections": "Elections",
+    "admin": "Admin Panel",
+    "logout": "Logout",
+    "profile": "Profile",
+    "welcome": "Welcome back",
+    "my_cases": "My Cases",
+    "recent_activity": "Recent Activity",
+    "notifications": "Notifications"
+}
