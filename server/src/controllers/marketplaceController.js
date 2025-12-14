@@ -20,7 +20,7 @@ const getItems = async (req, res) => {
 
 const createItem = async (req, res) => {
     try {
-        const { name, description, price } = req.body;
+        const { name, description, price, imageUrl } = req.body;
         const sellerId = req.user.id;
 
         const item = await prisma.marketplaceItem.create({
@@ -28,6 +28,7 @@ const createItem = async (req, res) => {
                 name,
                 description,
                 price: parseFloat(price),
+                imageUrl,
                 status: 'AVAILABLE',
                 sellerId
             }

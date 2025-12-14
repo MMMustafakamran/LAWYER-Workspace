@@ -265,8 +265,12 @@ export default function Marketplace() {
                 ) : items.length > 0 ? (
                     items.map((item) => (
                         <div key={item.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col">
-                            <div className="h-48 bg-gray-100 flex items-center justify-center">
-                                <ShoppingBag className="h-12 w-12 text-gray-300" />
+                            <div className="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+                                {item.imageUrl ? (
+                                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover transition-transform hover:scale-105" />
+                                ) : (
+                                    <ShoppingBag className="h-12 w-12 text-gray-300" />
+                                )}
                             </div>
                             <div className="p-6 flex-grow flex flex-col">
                                 <div className="flex justify-between items-start mb-2">

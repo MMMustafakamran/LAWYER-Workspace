@@ -82,10 +82,10 @@ export default function Appointments() {
                 Appointment Manager
             </h1>
 
-            <div className="grid lg:grid-cols-3 gap-6">
-                {/* Left Column: Calendar & Filters */}
-                <div className="space-y-6">
-                    <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
+            <div className="grid lg:grid-cols-12 gap-8">
+                {/* Left Column: Calendar (4 cols) */}
+                <div className="lg:col-span-4 space-y-6">
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                         <Calendar
                             onChange={setDate}
                             value={date}
@@ -94,67 +94,87 @@ export default function Appointments() {
                         />
                     </div>
 
-                    <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-                        <h3 className="font-semibold text-gray-700 mb-3">Filter by Status</h3>
-                        <div className="space-y-2">
-                            {['ALL', 'PENDING', 'CONFIRMED', 'CANCELLED'].map(f => (
-                                <button
-                                    key={f}
-                                    onClick={() => setFilter(f)}
-                                    className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors flex justify-between items-center ${filter === f ? 'bg-primary-50 text-primary-700 border border-primary-200' : 'text-gray-600 hover:bg-gray-50'
-                                        }`}
-                                >
-                                    {f}
-                                    {filter === f && <Check className="w-4 h-4" />}
-                                </button>
-                            ))}
-                        </div>
+                    {/* Optional: Summary Stats could go here instead of filters if needed, or just leave empty for clean look */}
+                    <div className="bg-primary-50 rounded-xl p-5 border border-primary-100">
+                        <h4 className="text-primary-900 font-semibold mb-2">Did you know?</h4>
+                        <p className="text-sm text-primary-700">
+                            You can click on any date to view appointments. The blue dots indicate scheduled meetings.
+                        </p>
                     </div>
                 </div>
 
-                {/* Right Column: List */}
-                <div className="lg:col-span-2">
-                    <div className="bg-white rounded-lg shadow border border-gray-200 min-h-[500px] flex flex-col">
-                        <div className="p-4 border-b border-gray-200 bg-gray-50">
-                            <h2 className="font-semibold text-gray-800">
-                                Appointments for {date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                {/* Right Column: List & Filters (8 cols) */}
+                <div className="lg:col-span-8 space-y-6">
+                    {/* Filters Tabs */}
+                    <div className="flex space-x-2 overflow-x-auto pb-2">
+                        {['ALL', 'PENDING', 'CONFIRMED', 'CANCELLED'].map(f => (
+                            <button
+                                key={f}
+                                onClick={() => setFilter(f)}
+                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filter === f
+                                        ? 'bg-gray-900 text-white shadow-md'
+                                        : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                    }`}
+                            >
+                                {f.charAt(0) + f.slice(1).toLowerCase()}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 min-h-[500px] flex flex-col overflow-hidden">
+                        <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                            <h2 className="font-bold text-gray-800 text-lg">
+                                {date.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
                             </h2>
+                            <span className="text-sm text-gray-500 font-medium">
+                                {filteredAppointments.length} Appointments
+                            </span>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-4">
+                        <div className="flex-1 overflow-y-auto p-6">
                             {filteredAppointments.length === 0 ? (
-                                <div className="h-full flex flex-col items-center justify-center text-gray-400">
-                                    <CalendarIcon className="w-12 h-12 mb-3 opacity-20" />
-                                    <p>No appointments for this date.</p>
+                                <div className="h-full flex flex-col items-center justify-center text-gray-400 py-12">
+                                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                        <CalendarIcon className="w-8 h-8 text-gray-300" />
+                                    </div>
+                                    <p className="text-gray-500 font-medium">No appointments found</p>
+                                    <p className="text-sm text-gray-400">Try selecting a different date or filter</p>
                                 </div>
                             ) : (
-                                <div className="space-y-3">
+                                <div className="space-y-4">
                                     {filteredAppointments.map((app) => {
                                         const party = otherParty(app);
                                         return (
                                             <div
                                                 key={app.id}
                                                 onClick={() => setSelectedAppointment(app)}
-                                                className="group p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all cursor-pointer bg-white"
+                                                className="group relative bg-white border border-gray-200 rounded-xl p-5 hover:border-primary-400 hover:shadow-lg transition-all cursor-pointer"
                                             >
-                                                <div className="flex justify-between items-start">
-                                                    <div className="flex items-start gap-3">
-                                                        <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold shrink-0">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center text-primary-700 font-bold text-lg shadow-sm shrink-0">
                                                             {party.name.charAt(0)}
                                                         </div>
                                                         <div>
-                                                            <h3 className="font-semibold text-gray-900 group-hover:text-primary-700 transition-colors">
+                                                            <h3 className="font-bold text-gray-900 group-hover:text-primary-700 transition-colors text-lg">
                                                                 {party.name}
                                                             </h3>
                                                             <div className="flex items-center text-sm text-gray-500 mt-1">
-                                                                <Clock className="w-3 h-3 mr-1" />
+                                                                <Clock className="w-4 h-4 mr-1.5 text-primary-500" />
                                                                 {app.dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                <span className="mx-2">•</span>
+                                                                <span>{user.role === 'LAWYER' ? 'Client' : 'Lawyer'} Meeting</span>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <span className={`px-2 py-1 text-xs font-bold rounded-full ${getStatusColor(app.status)}`}>
+                                                    <span className={`px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wider ${getStatusColor(app.status)}`}>
                                                         {app.status}
                                                     </span>
+                                                </div>
+
+                                                {/* Hover indication arrow */}
+                                                <div className="absolute right-4 bottom-4 opacity-0 group-hover:opacity-100 transition-opacity text-primary-600">
+                                                    <span className="text-xs font-medium">View Details &rarr;</span>
                                                 </div>
                                             </div>
                                         );

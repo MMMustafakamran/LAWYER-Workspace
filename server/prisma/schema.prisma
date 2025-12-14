@@ -106,6 +106,7 @@ model MarketplaceItem {
   name        String
   description String?
   price       Float
+  imageUrl    String?
   status      String
   sellerId    Int
   createdAt   DateTime @default(now())
