@@ -175,6 +175,8 @@ model Order {
   userId    Int
   total     Float
   status    String   @default("PENDING") // PENDING, COMPLETED, CANCELLED
+  paymentMethod String @default("COD") // COD, CARD
+  paymentStatus String @default("PENDING") // PENDING, PAID
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

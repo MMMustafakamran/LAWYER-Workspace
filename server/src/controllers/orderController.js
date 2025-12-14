@@ -2,18 +2,22 @@ const prisma = require('../utils/prisma');
 
 const createOrder = async (req, res) => {
     try {
-        const { items, total } = req.body;
+        const { items, total, paymentMethod } = req.body;
         const userId = req.user.id;
+
+        const paymentStatus = paymentMethod === 'CARD' ? 'PAID' : 'PENDING';
 
         const order = await prisma.order.create({
             data: {
                 userId,
                 total,
-                status: 'COMPLETED', // Simulating instant completion for now
+                status: 'COMPLETED',
+                paymentMethod: paymentMethod || 'COD',
+                paymentStatus,
                 items: {
                     create: items.map(item => ({
                         itemId: item.id,
-                        quantity: 1, // Defaulting to 1 for now
+                        quantity: 1,
                         price: item.price
                     }))
                 }

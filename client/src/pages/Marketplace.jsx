@@ -12,6 +12,7 @@ export default function Marketplace() {
     const [cart, setCart] = useState([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isCheckingOut, setIsCheckingOut] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState('COD'); // Default to COD
 
     useEffect(() => {
         fetchItems();
@@ -60,9 +61,10 @@ export default function Marketplace() {
         try {
             await axios.post('/orders', {
                 items: cart,
-                total: cartTotal
+                total: cartTotal,
+                paymentMethod
             });
-            alert('Order placed successfully!');
+            alert(`Order placed successfully via ${paymentMethod}!`);
             setCart([]);
             setIsCartOpen(false);
         } catch (error) {
@@ -153,6 +155,35 @@ export default function Marketplace() {
                                             <p>Subtotal</p>
                                             <p>${cartTotal.toFixed(2)}</p>
                                         </div>
+
+                                        <div className="mb-6">
+                                            <p className="text-sm font-medium text-gray-900 mb-2">Payment Method</p>
+                                            <div className="space-y-2">
+                                                <label className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                                    <input
+                                                        type="radio"
+                                                        name="payment"
+                                                        value="COD"
+                                                        checked={paymentMethod === 'COD'}
+                                                        onChange={(e) => setPaymentMethod(e.target.value)}
+                                                        className="h-4 w-4 text-primary-600 focus:ring-primary-500"
+                                                    />
+                                                    <span className="text-sm font-medium text-gray-900">Cash on Delivery (COD)</span>
+                                                </label>
+                                                <label className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                                    <input
+                                                        type="radio"
+                                                        name="payment"
+                                                        value="CARD"
+                                                        checked={paymentMethod === 'CARD'}
+                                                        onChange={(e) => setPaymentMethod(e.target.value)}
+                                                        className="h-4 w-4 text-primary-600 focus:ring-primary-500"
+                                                    />
+                                                    <span className="text-sm font-medium text-gray-900">Credit Card (Mock)</span>
+                                                </label>
+                                            </div>
+                                        </div>
+
                                         <p className="mt-0.5 text-sm text-gray-500 mb-6">
                                             Shipping and taxes calculated at checkout.
                                         </p>
@@ -164,7 +195,7 @@ export default function Marketplace() {
                                             {isCheckingOut ? 'Processing...' : (
                                                 <>
                                                     <CreditCard className="w-5 h-5 mr-2" />
-                                                    Checkout
+                                                    {paymentMethod === 'COD' ? 'Place Order (COD)' : 'Pay Now'}
                                                 </>
                                             )}
                                         </button>
