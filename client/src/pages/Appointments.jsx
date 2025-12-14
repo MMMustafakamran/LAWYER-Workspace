@@ -1,13 +1,18 @@
 import { useState, useEffect } from 'react';
 import axios from '../api/axios';
-import { Calendar, Clock, Check, X, User } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, Check, X, User, Phone, Mail, FileText } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import '../styles/calendar.css';
 
 export default function Appointments() {
     const { user } = useAuth();
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState('ALL'); // ALL, PENDING, CONFIRMED
+    const [filter, setFilter] = useState('ALL');
+    const [date, setDate] = useState(new Date());
+    const [selectedAppointment, setSelectedAppointment] = useState(null);
 
     useEffect(() => {
         fetchAppointments();
@@ -16,7 +21,11 @@ export default function Appointments() {
     const fetchAppointments = async () => {
         try {
             const res = await axios.get('/appointments');
-            setAppointments(res.data);
+            const sorted = res.data.map(app => ({
+                ...app,
+                dateObj: new Date(app.date)
+            })).sort((a, b) => b.dateObj - a.dateObj);
+            setAppointments(sorted);
         } catch (error) {
             console.error('Failed to fetch appointments', error);
         } finally {
@@ -27,20 +36,17 @@ export default function Appointments() {
     const handleStatusUpdate = async (id, status) => {
         try {
             await axios.put(`/appointments/${id}/status`, { status });
-            // Optimistic update
             setAppointments(appointments.map(app =>
                 app.id === id ? { ...app, status } : app
             ));
+            if (selectedAppointment && selectedAppointment.id === id) {
+                setSelectedAppointment({ ...selectedAppointment, status });
+            }
         } catch (error) {
             console.error('Failed to update status', error);
             alert('Failed to update appointment status');
         }
     };
-
-    const filteredAppointments = appointments.filter(app => {
-        if (filter === 'ALL') return true;
-        return app.status === filter;
-    });
 
     const getStatusColor = (status) => {
         switch (status) {
@@ -50,86 +56,214 @@ export default function Appointments() {
         }
     };
 
+    const filteredAppointments = appointments.filter(app => {
+        const matchesFilter = filter === 'ALL' || app.status === filter;
+        const matchesDate = app.dateObj.toDateString() === date.toDateString();
+        return matchesFilter && matchesDate;
+    });
+
+    const isSameDay = (d1, d2) => d1.toDateString() === d2.toDateString();
+
+    const tileClassName = ({ date, view }) => {
+        if (view === 'month') {
+            const hasAppt = appointments.some(app => isSameDay(app.dateObj, date));
+            return hasAppt ? 'has-appointment' : null;
+        }
+    };
+
     if (loading) return <div className="p-6 text-center">Loading appointments...</div>;
+
+    const otherParty = (app) => user.role === 'LAWYER' ? app.client : app.lawyer;
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-                    <Calendar className="w-6 h-6 mr-2" />
-                    My Appointments
-                </h1>
-                <div className="flex space-x-2">
-                    {['ALL', 'PENDING', 'CONFIRMED', 'CANCELLED'].map(f => (
-                        <button
-                            key={f}
-                            onClick={() => setFilter(f)}
-                            className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${filter === f ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                }`}
-                        >
-                            {f}
-                        </button>
-                    ))}
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center font-serif">
+                <CalendarIcon className="w-6 h-6 mr-2" />
+                Appointment Manager
+            </h1>
+
+            <div className="grid lg:grid-cols-3 gap-6">
+                {/* Left Column: Calendar & Filters */}
+                <div className="space-y-6">
+                    <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
+                        <Calendar
+                            onChange={setDate}
+                            value={date}
+                            tileClassName={tileClassName}
+                            className="w-full border-none font-sans"
+                        />
+                    </div>
+
+                    <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
+                        <h3 className="font-semibold text-gray-700 mb-3">Filter by Status</h3>
+                        <div className="space-y-2">
+                            {['ALL', 'PENDING', 'CONFIRMED', 'CANCELLED'].map(f => (
+                                <button
+                                    key={f}
+                                    onClick={() => setFilter(f)}
+                                    className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors flex justify-between items-center ${filter === f ? 'bg-primary-50 text-primary-700 border border-primary-200' : 'text-gray-600 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    {f}
+                                    {filter === f && <Check className="w-4 h-4" />}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Column: List */}
+                <div className="lg:col-span-2">
+                    <div className="bg-white rounded-lg shadow border border-gray-200 min-h-[500px] flex flex-col">
+                        <div className="p-4 border-b border-gray-200 bg-gray-50">
+                            <h2 className="font-semibold text-gray-800">
+                                Appointments for {date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                            </h2>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-4">
+                            {filteredAppointments.length === 0 ? (
+                                <div className="h-full flex flex-col items-center justify-center text-gray-400">
+                                    <CalendarIcon className="w-12 h-12 mb-3 opacity-20" />
+                                    <p>No appointments for this date.</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {filteredAppointments.map((app) => {
+                                        const party = otherParty(app);
+                                        return (
+                                            <div
+                                                key={app.id}
+                                                onClick={() => setSelectedAppointment(app)}
+                                                className="group p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all cursor-pointer bg-white"
+                                            >
+                                                <div className="flex justify-between items-start">
+                                                    <div className="flex items-start gap-3">
+                                                        <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold shrink-0">
+                                                            {party.name.charAt(0)}
+                                                        </div>
+                                                        <div>
+                                                            <h3 className="font-semibold text-gray-900 group-hover:text-primary-700 transition-colors">
+                                                                {party.name}
+                                                            </h3>
+                                                            <div className="flex items-center text-sm text-gray-500 mt-1">
+                                                                <Clock className="w-3 h-3 mr-1" />
+                                                                {app.dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <span className={`px-2 py-1 text-xs font-bold rounded-full ${getStatusColor(app.status)}`}>
+                                                        {app.status}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
-                {filteredAppointments.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">
-                        No appointments found.
-                    </div>
-                ) : (
-                    <ul className="divide-y divide-gray-200">
-                        {filteredAppointments.map((app) => (
-                            <li key={app.id} className="p-6 hover:bg-gray-50 transition-colors">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-start">
-                                        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold">
-                                            <Calendar className="w-5 h-5" />
-                                        </div>
-                                        <div className="ml-4">
-                                            <div className="text-sm font-medium text-gray-900">
-                                                {user.role === 'LAWYER' ? `Client: ${app.client.name}` : `Lawyer: ${app.lawyer.name}`}
-                                            </div>
-                                            <div className="text-sm text-gray-500 flex items-center mt-1">
-                                                <Clock className="w-3 h-3 mr-1" />
-                                                {new Date(app.date).toLocaleString()}
-                                            </div>
-                                            {app.notes && (
-                                                <p className="text-sm text-gray-600 mt-2 bg-gray-50 p-2 rounded">
-                                                    "{app.notes}"
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col items-end space-y-2">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(app.status)}`}>
-                                            {app.status}
-                                        </span>
+            {/* Details Modal */}
+            {selectedAppointment && (
+                <div className="fixed inset-0 z-50 overflow-y-auto">
+                    <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                        <div className="fixed inset-0 transition-opacity" onClick={() => setSelectedAppointment(null)}>
+                            <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+                        </div>
 
-                                        {user.role === 'LAWYER' && app.status === 'PENDING' && (
-                                            <div className="flex space-x-2 mt-2">
-                                                <button
-                                                    onClick={() => handleStatusUpdate(app.id, 'CONFIRMED')}
-                                                    className="flex items-center px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition"
-                                                >
-                                                    <Check className="w-3 h-3 mr-1" /> Accept
-                                                </button>
-                                                <button
-                                                    onClick={() => handleStatusUpdate(app.id, 'CANCELLED')}
-                                                    className="flex items-center px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition"
-                                                >
-                                                    <X className="w-3 h-3 mr-1" /> Reject
-                                                </button>
-                                            </div>
-                                        )}
+                        <span className="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+
+                        <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                            <div className="absolute top-0 right-0 pt-4 pr-4">
+                                <button onClick={() => setSelectedAppointment(null)} className="text-gray-400 hover:text-gray-500">
+                                    <X className="w-6 h-6" />
+                                </button>
+                            </div>
+
+                            <div className="sm:flex sm:items-start">
+                                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                    <h3 className="text-xl leading-6 font-bold text-gray-900 mb-1">
+                                        Appointment Details
+                                    </h3>
+                                    <p className="text-sm text-gray-500 mb-6">
+                                        ID: #{selectedAppointment.id}
+                                    </p>
+
+                                    <div className="bg-gray-50 rounded-lg p-4 mb-6 grid grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-xs text-gray-500 uppercase font-semibold">Date</p>
+                                            <p className="text-sm font-medium">{selectedAppointment.dateObj.toLocaleDateString()}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-gray-500 uppercase font-semibold">Time</p>
+                                            <p className="text-sm font-medium">{selectedAppointment.dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <p className="text-xs text-gray-500 uppercase font-semibold">Status</p>
+                                            <span className={`inline-block px-2 py-1 text-xs font-bold rounded-full mt-1 ${getStatusColor(selectedAppointment.status)}`}>
+                                                {selectedAppointment.status}
+                                            </span>
+                                        </div>
                                     </div>
+
+                                    <div className="space-y-4">
+                                        <div>
+                                            <h4 className="text-sm font-bold text-gray-900 flex items-center mb-2">
+                                                <User className="w-4 h-4 mr-2 text-primary-600" />
+                                                {user.role === 'LAWYER' ? 'Client Information' : 'Lawyer Information'}
+                                            </h4>
+                                            <div className="bg-white border border-gray-200 rounded p-3 space-y-2 text-sm">
+                                                <div className="flex items-center">
+                                                    <span className="font-medium mr-2 w-16">Name:</span>
+                                                    {otherParty(selectedAppointment).name}
+                                                </div>
+                                                <div className="flex items-center">
+                                                    <span className="font-medium mr-2 w-16 flex items-center"><Mail className="w-3 h-3 mr-1" /> Email:</span>
+                                                    {otherParty(selectedAppointment).email}
+                                                </div>
+                                                <div className="flex items-center">
+                                                    <span className="font-medium mr-2 w-16 flex items-center"><Phone className="w-3 h-3 mr-1" /> Phone:</span>
+                                                    {otherParty(selectedAppointment).phone || 'N/A'}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <h4 className="text-sm font-bold text-gray-900 flex items-center mb-2">
+                                                <FileText className="w-4 h-4 mr-2 text-primary-600" />
+                                                Notes
+                                            </h4>
+                                            <div className="bg-gray-50 border border-gray-200 rounded p-3 text-sm text-gray-700 italic">
+                                                "{selectedAppointment.notes || 'No notes provided.'}"
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {user.role === 'LAWYER' && selectedAppointment.status === 'PENDING' && (
+                                        <div className="mt-8 flex gap-3">
+                                            <button
+                                                onClick={() => handleStatusUpdate(selectedAppointment.id, 'CONFIRMED')}
+                                                className="flex-1 btn-primary justify-center bg-green-600 hover:bg-green-700 border-transparent"
+                                            >
+                                                Accept Appointment
+                                            </button>
+                                            <button
+                                                onClick={() => handleStatusUpdate(selectedAppointment.id, 'CANCELLED')}
+                                                className="flex-1 btn-secondary justify-center text-red-600 border-red-200 hover:bg-red-50"
+                                            >
+                                                Reject
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

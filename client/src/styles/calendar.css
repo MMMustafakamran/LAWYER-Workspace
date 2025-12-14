@@ -1,0 +1,90 @@
+.react-calendar {
+  width: 100%;
+  background: white;
+  border: none;
+  font-family: inherit;
+  line-height: 1.125em;
+}
+
+.react-calendar__navigation button {
+  min-width: 44px;
+  background: none;
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background-color: #f3f4f6;
+  border-radius: 8px;
+}
+
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 0.75em;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: #ef4444;
+}
+
+.react-calendar__tile {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin: 2px 0;
+  font-size: 14px;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background-color: #e5e7eb;
+}
+
+.react-calendar__tile--now {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.react-calendar__tile--now:enabled:hover,
+.react-calendar__tile--now:enabled:focus {
+  background: #fde68a;
+}
+
+.react-calendar__tile--active {
+  background: #1e3a8a !important;
+  color: white !important;
+}
+
+.react-calendar__tile--active:enabled:hover,
+.react-calendar__tile--active:enabled:focus {
+  background: #1e40af;
+}
+
+/* Custom class for days with appointments */
+.has-appointment {
+  position: relative;
+}
+
+.has-appointment::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background-color: #1e3a8a; /* Primary color dot */
+  border-radius: 50%;
+}
+
+.react-calendar__tile--active.has-appointment::after {
+  background-color: white;
+}
