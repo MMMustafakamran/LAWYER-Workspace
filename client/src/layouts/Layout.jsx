@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Briefcase, Home, BookOpen, ShoppingBag, MessageSquare, Vote, Menu, X, Scale, User, Globe } from 'lucide-react';
+import { LogOut, Briefcase, Home, BookOpen, ShoppingBag, MessageSquare, Vote, Menu, X, Scale, User, Globe, Calendar } from 'lucide-react';
 import NotificationBell from '../components/NotificationBell';
 import { useState } from 'react';
 
@@ -27,6 +27,7 @@ export default function Layout() {
     const navItems = [
         { to: '/dashboard', icon: Home, label: t('dashboard') },
         { to: '/cases', icon: Briefcase, label: t('cases') },
+        { to: '/appointments', icon: Calendar, label: t('appointments') },
         { to: '/research', icon: BookOpen, label: t('research') },
         { to: '/lawyers', icon: User, label: t('lawyers') },
         { to: '/marketplace', icon: ShoppingBag, label: t('marketplace') },

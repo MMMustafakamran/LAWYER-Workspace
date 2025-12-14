@@ -41,8 +41,8 @@ const getMyAppointments = async (req, res) => {
         const appointments = await prisma.appointment.findMany({
             where,
             include: {
-                lawyer: { select: { name: true, email: true } },
-                client: { select: { name: true, email: true } }
+                lawyer: { select: { name: true, email: true, phone: true } },
+                client: { select: { name: true, email: true, phone: true } }
             },
             orderBy: { date: 'asc' }
         });

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { Bell } from 'lucide-react';
 
@@ -6,6 +7,21 @@ export default function NotificationBell() {
     const [notifications, setNotifications] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
+    const navigate = useNavigate();
+
+    const handleNotificationClick = async (notification) => {
+        if (!notification.isRead) {
+            await markAsRead(notification.id);
+        }
+        setShowDropdown(false);
+
+        // Simple logic to route based on content
+        if (notification.message.toLowerCase().includes('appointment')) {
+            navigate('/appointments');
+        } else if (notification.type === 'MESSAGE') {
+            navigate('/chat');
+        }
+    };
 
     useEffect(() => {
         fetchNotifications();
@@ -72,9 +88,9 @@ export default function NotificationBell() {
                             notifications.map((notification) => (
                                 <div
                                     key={notification.id}
-                                    className={`px-4 py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors ${!notification.isRead ? 'bg-blue-50' : ''
+                                    className={`px-4 py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors cursor-pointer ${!notification.isRead ? 'bg-blue-50' : ''
                                         }`}
-                                    onClick={() => !notification.isRead && markAsRead(notification.id)}
+                                    onClick={() => handleNotificationClick(notification)} // Updated onClick
                                 >
                                     <p className={`text-sm ${!notification.isRead ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>
                                         {notification.message}

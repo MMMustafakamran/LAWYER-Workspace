@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
-import { MapPin, Briefcase, Star, Phone, Mail, Clock, Award } from 'lucide-react';
+import { MapPin, Briefcase, Star, Phone, Mail, Clock, Award, Calendar } from 'lucide-react';
 
 export default function LawyerProfile() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [lawyer, setLawyer] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isBooking, setIsBooking] = useState(false);
+    const [appointmentData, setAppointmentData] = useState({ date: '', notes: '' });
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -22,6 +24,21 @@ export default function LawyerProfile() {
         };
         fetchProfile();
     }, [id]);
+
+    const handleBookAppointment = async () => {
+        try {
+            await axios.post('/appointments', {
+                lawyerId: lawyer.id,
+                ...appointmentData
+            });
+            alert('Appointment request sent!');
+            setIsBooking(false);
+            setAppointmentData({ date: '', notes: '' });
+        } catch (error) {
+            console.error('Booking failed', error);
+            alert('Failed to book appointment');
+        }
+    };
 
     if (loading) return <div className="text-center py-12">Loading profile...</div>;
     if (!lawyer) return <div className="text-center py-12">Lawyer not found</div>;
@@ -97,6 +114,13 @@ export default function LawyerProfile() {
                         Contact Information
                     </h3>
                     <div className="space-y-3">
+                        <button
+                            onClick={() => setIsBooking(true)}
+                            className="w-full btn-accent flex items-center justify-center py-2 px-4 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all mb-4"
+                        >
+                            <Calendar className="w-5 h-5 mr-2" />
+                            Book Appointment
+                        </button>
                         <div className="flex items-center text-gray-600">
                             <Mail className="w-4 h-4 mr-3" />
                             {lawyer.email}
@@ -130,6 +154,72 @@ export default function LawyerProfile() {
                     )}
                 </div>
             </div>
+
+            {/* Appointment Modal */}
+            {isBooking && (
+                <div className="fixed inset-0 z-50 overflow-y-auto">
+                    <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                        <div className="fixed inset-0 transition-opacity" onClick={() => setIsBooking(false)}>
+                            <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+                        </div>
+
+                        <span className="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+
+                        <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                            <div>
+                                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-accent-100">
+                                    <Calendar className="h-6 w-6 text-accent-600" />
+                                </div>
+                                <div className="mt-3 text-center sm:mt-5">
+                                    <h3 className="text-lg leading-6 font-medium text-gray-900">Book Appointment</h3>
+                                    <div className="mt-2">
+                                        <p className="text-sm text-gray-500">
+                                            Request a consultation with {lawyer.name}.
+                                        </p>
+                                    </div>
+                                    <div className="mt-4 space-y-3 text-left">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">Date & Time</label>
+                                            <input
+                                                type="datetime-local"
+                                                className="input-field mt-1"
+                                                value={appointmentData.date}
+                                                onChange={(e) => setAppointmentData({ ...appointmentData, date: e.target.value })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">Notes</label>
+                                            <textarea
+                                                className="input-field mt-1"
+                                                rows="3"
+                                                placeholder="Briefly describe your legal issue..."
+                                                value={appointmentData.notes}
+                                                onChange={(e) => setAppointmentData({ ...appointmentData, notes: e.target.value })}
+                                            ></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3">
+                                <button
+                                    type="button"
+                                    className="btn-primary w-full justify-center"
+                                    onClick={handleBookAppointment}
+                                >
+                                    Confirm Booking
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn-secondary w-full justify-center mt-3 sm:mt-0"
+                                    onClick={() => setIsBooking(false)}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -14,6 +14,7 @@ import LawyerProfile from './pages/LawyerProfile';
 import Marketplace from './pages/Marketplace';
 import Chat from './pages/Chat';
 import Elections from './pages/Elections';
+import Appointments from './pages/Appointments';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
 
@@ -37,6 +38,7 @@ function App() {
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/elections" element={<Elections />} />
+              <Route path="/appointments" element={<Appointments />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
