@@ -41,6 +41,7 @@ model User {
   lawyerProfile LawyerProfile?
   appointmentsAsLawyer Appointment[] @relation("LawyerAppointments")
   appointmentsAsClient Appointment[] @relation("ClientAppointments")
+  orders        Order[]
 }
 
 model Appointment {
@@ -110,6 +111,7 @@ model MarketplaceItem {
   createdAt   DateTime @default(now())
 
   seller User @relation(fields: [sellerId], references: [id])
+  orderItems OrderItem[]
 }
 
 model Chat {
@@ -167,3 +169,27 @@ model Notification {
 
   user User @relation(fields: [userId], references: [id])
 }
+
+model Order {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  total     Float
+  status    String   @default("PENDING") // PENDING, COMPLETED, CANCELLED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User        @relation(fields: [userId], references: [id])
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  itemId    Int
+  quantity  Int
+  price     Float
+
+  order     Order           @relation(fields: [orderId], references: [id])
+  item      MarketplaceItem @relation(fields: [itemId], references: [id])
+}
+
