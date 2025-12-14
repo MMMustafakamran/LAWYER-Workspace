@@ -20,13 +20,14 @@ const initSocket = (server) => {
         });
 
         socket.on('send_message', async (data) => {
-            const { senderId, message, barId } = data;
+            const { senderId, receiverId, message, barId } = data;
 
             // Save to database
             try {
                 const savedMessage = await prisma.chat.create({
                     data: {
                         senderId,
+                        receiverId,
                         message,
                         barId
                     },
@@ -37,8 +38,28 @@ const initSocket = (server) => {
                     }
                 });
 
-                // Broadcast to room (barId is used as room)
+                // Broadcast to chat room
                 io.to(barId).emit('receive_message', savedMessage);
+
+                // Notify receiver if they are in their personal room
+                if (receiverId) {
+                    // Send a notification event
+                    io.to(`user_${receiverId}`).emit('new_notification', {
+                        type: 'MESSAGE',
+                        message: `New message from ${savedMessage.sender.name}`,
+                        conversationId: barId,
+                        data: savedMessage
+                    });
+
+                    // Persist notification
+                    await prisma.notification.create({
+                        data: {
+                            userId: receiverId,
+                            message: `New message from ${savedMessage.sender.name}`,
+                            type: 'MESSAGE'
+                        }
+                    });
+                }
             } catch (error) {
                 console.error('Error saving message:', error);
             }

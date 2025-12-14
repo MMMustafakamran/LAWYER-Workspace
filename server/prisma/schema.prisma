@@ -34,7 +34,8 @@ model User {
   casesAsClient Case[] @relation("ClientCases")
   documents     Document[]
   items         MarketplaceItem[]
-  sentMessages  Chat[]
+  sentMessages     Chat[] @relation("SentChats")
+  receivedMessages Chat[] @relation("ReceivedChats")
   votes         Vote[]
   notifications Notification[]
   lawyerProfile LawyerProfile?
@@ -96,13 +97,15 @@ model MarketplaceItem {
 }
 
 model Chat {
-  id        Int      @id @default(autoincrement())
-  message   String
-  senderId  Int
-  barId     String?
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  message    String
+  senderId   Int
+  receiverId Int?
+  barId      String?
+  createdAt  DateTime @default(now())
 
-  sender User @relation(fields: [senderId], references: [id])
+  sender   User  @relation("SentChats", fields: [senderId], references: [id])
+  receiver User? @relation("ReceivedChats", fields: [receiverId], references: [id])
 }
 
 model Poll {

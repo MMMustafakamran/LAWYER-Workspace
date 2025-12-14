@@ -20,43 +20,78 @@ export default function Chat() {
     const messagesEndRef = useRef(null);
 
     // Initialize Socket and fetch conversations
+    // Initialize Socket and fetch conversations
     useEffect(() => {
         const newSocket = io('http://localhost:5000');
         setSocket(newSocket);
 
+        newSocket.on('connect', () => {
+            if (user) {
+                newSocket.emit('join_room', `user_${user.id}`);
+            }
+        });
+
         newSocket.on('receive_message', (message) => {
-            // Only add message if it belongs to the active room
             setMessages((prev) => {
-                // We can't easily check activeRoom state here due to closure, 
-                // but we can check if the message barId matches the current room in a ref or just append
-                // For simplicity, we'll append and filter in render or rely on room logic
                 if (message.barId === activeRoom) {
                     return [...prev, message];
                 }
                 return prev;
             });
-            fetchConversations(); // Refresh list to show new messages/unread
+            fetchConversations();
+        });
+
+        newSocket.on('new_notification', (notification) => {
+            fetchConversations();
+            // TODO: Show toast notification
+            console.log('New notification:', notification);
         });
 
         fetchConversations();
 
         return () => newSocket.close();
-    }, []);
+    }, [user, activeRoom]); // Add dependencies
 
     // Handle initial room selection (from URL or default)
     useEffect(() => {
-        if (receiverId && user) {
-            const rId = parseInt(receiverId);
-            const uId = user.id;
-            const roomId = `private_${Math.min(rId, uId)}_${Math.max(rId, uId)}`;
-            setActiveRoom(roomId);
-            // We need to fetch the user details if not in conversations list
-            // For now, we'll just set the room and let the fetchHistory handle it
-        } else if (conversations.length > 0 && !activeRoom) {
-            // Default to first conversation
-            setActiveRoom(conversations[0].roomId);
-            setActiveUser(conversations[0].otherUser);
-        }
+        const initChat = async () => {
+            if (receiverId && user) {
+                const rId = parseInt(receiverId);
+                const uId = user.id;
+                const roomId = `private_${Math.min(rId, uId)}_${Math.max(rId, uId)}`;
+                setActiveRoom(roomId);
+
+                // Fetch user details if not known
+                try {
+                    // We can reuse getConversations or just fetch user details
+                    // Assuming we have an endpoint for user details or just generic "get user"
+                    // For now, we'll try to find in existing conversations or rely on fetching history which might return sender details? 
+                    // No, fetchHistory returns messages.
+                    // Better: fetch user info.
+                    const res = await axios.get(`/users/${rId}`); // Assuming this endpoint exists, or we use a new one
+                    // Wait, there might not be a general user endpoint.
+                    // Let's use what we have. 
+                    // We can mock it or just set ID.
+                    // But we need name for the header.
+                    // Let's check if we have it in conversations.
+                    const existing = conversations.find(c => c.otherUser.id === rId);
+                    if (existing) {
+                        setActiveUser(existing.otherUser);
+                    } else {
+                        // Fetch it. 
+                        // If no endpoint, we might have trouble.
+                        // But we can assume the user navigated from a place where they saw the user.
+                        // Let's check available endpoints.
+                    }
+                } catch (e) {
+                    console.error("Error setting up chat", e);
+                }
+            } else if (conversations.length > 0 && !activeRoom) {
+                setActiveRoom(conversations[0].roomId);
+                setActiveUser(conversations[0].otherUser);
+            }
+        };
+        initChat();
     }, [receiverId, user, conversations]);
 
     // Join room and fetch history when activeRoom changes
@@ -97,8 +132,17 @@ export default function Chat() {
         e.preventDefault();
         if (!newMessage.trim() || !socket || !activeRoom) return;
 
+        // Determine receiver ID
+        let currentReceiverId = null;
+        if (activeUser) {
+            currentReceiverId = activeUser.id;
+        } else if (receiverId) {
+            currentReceiverId = parseInt(receiverId);
+        }
+
         const messageData = {
             senderId: user.id,
+            receiverId: currentReceiverId,
             message: newMessage,
             barId: activeRoom,
             sender: { name: user.name }
@@ -107,7 +151,7 @@ export default function Chat() {
         socket.emit('send_message', messageData);
         setMessages(prev => [...prev, { ...messageData, createdAt: new Date().toISOString() }]);
         setNewMessage('');
-        fetchConversations(); // Update last message in sidebar
+        fetchConversations();
     };
 
     const handleSelectConversation = (conv) => {

@@ -1,323 +1,320 @@
-# ⭐ **LAWYER APP — COMPLETE FULL PROJECT DOCUMENTATION**
-
+Here is your document with all emojis removed:
 
 ---
 
-# 1️⃣ **PROJECT NAME**
+# LAWYER APP — COMPLETE FULL PROJECT DOCUMENTATION
+
+---
+
+# 1. PROJECT NAME
 
 **LAWYER Workspace – One Solution for Every Legal Professional**
 
 ---
 
-# 2️⃣ **PROJECT PURPOSE**
+# 2. PROJECT PURPOSE
 
 A digital ecosystem for:
 
-* **Lawyers (Pakistan)**
-* **Litigants (Global)**
-* **Law Clerks**
-* **Law Firms**
-* **Bar Associations**
-* **Vendors (Marketplace)**
+- **Lawyers (Pakistan)**
+- **Litigants (Global)**
+- **Law Clerks**
+- **Law Firms**
+- **Bar Associations**
+- **Vendors (Marketplace)**
 
 To manage cases, research, communication, elections, hiring, and commerce.
 
 ---
 
-# 3️⃣ **TARGET USERS**
+# 3. TARGET USERS
 
-### **Primary**
+### Primary
 
-* Lawyers
-* Law firms
-* Clerks
+- Lawyers
+- Law firms
+- Clerks
 
-### **Secondary**
+### Secondary
 
-* Litigants
-* Students
-* Vendors
+- Litigants
+- Students
+- Vendors
 
-### **Administrative**
+### Administrative
 
-* System admin
-* Bar Council officials
-* Developer (super admin)
-
----
-
-# 4️⃣ **FULL FEATURE SET (All Modules)**
-
-### ✔ **1. Smart Case Management System**
-
-* Create new case
-* Store documents (PDF, images)
-* Auto-generate case folders
-* Search cases by:
-
-  * Title
-  * Court
-  * Client
-  * Case number
-* Evidence storage
-* Notes section
-* Hearing date calendar
-* Daily cause list (SMS & app)
-* Automatic reminders
-* Case status tracking
-* Share case with:
-
-  * Client
-  * Clerk
-  * Firm members
+- System admin
+- Bar Council officials
+- Developer (super admin)
 
 ---
 
-### ✔ **2. Document Scanner System**
+# 4. FULL FEATURE SET (All Modules)
 
-* CamScanner-style enhancement
-* Auto-crop
-* Auto-brightness
-* Save as PDF
-* Upload directly into case files
+### 1. Smart Case Management System
 
----
-
-### ✔ **3. Legal Research Hub**
-
-* **Bare Acts Library** (major + minor)
-* **Case Law Library** with:
-
-  * Party-based search
-  * Judge-based search
-  * Statute search
-  * Keyword search
-  * Year filters
-  * Court filters
-  * Chambers & Divisions
-* **Advanced Filters**:
-
-  * Sort by relevance
-  * Sort by date
-  * Precedent strength score
-* **Case Tools**
-
-  * Save
-  * Share
-  * Print
-  * Bookmark
-  * Summarize via AI (optional)
+- Create new case
+- Store documents (PDF, images)
+- Auto-generate case folders
+- Search cases by:
+  - Title
+  - Court
+  - Client
+  - Case number
+- Evidence storage
+- Notes section
+- Hearing date calendar
+- Daily cause list (SMS & app)
+- Automatic reminders
+- Case status tracking
+- Share case with:
+  - Client
+  - Clerk
+  - Firm members
 
 ---
 
-### ✔ **4. Lawyer Directory (Hiring System)**
+### 2. Document Scanner System
+
+- CamScanner-style enhancement
+- Auto-crop
+- Auto-brightness
+- Save as PDF
+- Upload directly into case files
+
+---
+
+### 3. Legal Research Hub
+
+- **Bare Acts Library** (major + minor)
+- **Case Law Library** with:
+  - Party-based search
+  - Judge-based search
+  - Statute search
+  - Keyword search
+  - Year filters
+  - Court filters
+  - Chambers & Divisions
+- **Advanced Filters**:
+  - Sort by relevance
+  - Sort by date
+  - Precedent strength score
+- **Case Tools**
+  - Save
+  - Share
+  - Print
+  - Bookmark
+  - Summarize via AI (optional)
+
+---
+
+### 4. Lawyer Directory (Hiring System)
 
 *(Alternative to ZOR)*
 
-* Lawyer profiles
-* Experience
-* Specializations
-* Languages
-* Fees
-* Location
-* Ratings & reviews
-* Office contact info
-* “Hire Me” button
-* Chat with lawyer
-* Call lawyer
-* Appointment scheduling
+- Lawyer profiles
+- Experience
+- Specializations
+- Languages
+- Fees
+- Location
+- Ratings & reviews
+- Office contact info
+- “Hire Me” button
+- Chat with lawyer
+- Call lawyer
+- Appointment scheduling
 
 For lawyers:
 
-* Set availability
-* Set hiring rate
-* Enable/disable hiring
+- Set availability
+- Set hiring rate
+- Enable/disable hiring
 
 ---
 
-### ✔ **5. Lawyer Marketplace**
+### 5. Lawyer Marketplace
 
 Sell or purchase:
 
-* Books
-* Robes
-* Files & stationery
-* Office chairs/desks
-* Court accessories
-* Digital tools
-* Free category
+- Books
+- Robes
+- Files & stationery
+- Office chairs/desks
+- Court accessories
+- Digital tools
+- Free category
 
 Features:
 
-* Add product
-* Manage inventory
-* Checkout system
-* Seller dashboard
-* Commission system
+- Add product
+- Manage inventory
+- Checkout system
+- Seller dashboard
+- Commission system
 
 ---
 
-### ✔ **6. Bar Association Chat Rooms**
+### 6. Bar Association Chat Rooms
 
-* Lawyers-only verified chat
-* Each bar has its own group
-* Backend verification:
-
-  * Bar membership number
-  * CNIC
-  * License
-* Threaded chat
-* Polls & announcements
-* Clerk association chat rooms
+- Lawyers-only verified chat
+- Each bar has its own group
+- Backend verification:
+  - Bar membership number
+  - CNIC
+  - License
+- Threaded chat
+- Polls & announcements
+- Clerk association chat rooms
 
 ---
 
-### ✔ **7. Bar Elections & Polling Module**
+### 7. Bar Elections & Polling Module
 
 (For Bar Councils & Bar Associations)
 
-* Opinion polls (NOT official votes)
-* Candidate list
-* Candidate profiles
-* Users cast vote once
-* Users can re-vote
-* Real-time aggregate results
-* Region-wise breakdown
+- Opinion polls (NOT official votes)
+- Candidate list
+- Candidate profiles
+- Users cast vote once
+- Users can re-vote
+- Real-time aggregate results
+- Region-wise breakdown
 
 ---
 
-### ✔ **8. Multi-Language System**
+### 8. Multi-Language System
 
 Supported:
 
-* Urdu
-* English
-* Sindhi
-* Pashto
-* Balochi
-* Chinese
-* Arabic
-* French
-* Dutch
+- Urdu
+- English
+- Sindhi
+- Pashto
+- Balochi
+- Chinese
+- Arabic
+- French
+- Dutch
 
 Automatic change without restarting app.
 
 ---
 
-### ✔ **9. Notifications & SMS Alerts**
+### 9. Notifications & SMS Alerts
 
-* Cause lists
-* Hearing reminders
-* Document uploaded
-* Chat messages
-* Poll updates
-* Hiring requests
+- Cause lists
+- Hearing reminders
+- Document uploaded
+- Chat messages
+- Poll updates
+- Hiring requests
 
 ---
 
-### ✔ **10. Subscription System**
+### 10. Subscription System
 
 **Free Plan (Standard)**
 
-* Basic case management
-* Limited storage
-* Ads on marketplace
+- Basic case management
+- Limited storage
+- Ads on marketplace
 
 **Gold (Paid)**
 
-* Unlimited case storage
-* Priority search
-* Case law downloads
+- Unlimited case storage
+- Priority search
+- Case law downloads
 
 **Premium**
 
-* AI tools enabled
-* Unlimited research
+- AI tools enabled
+- Unlimited research
 
 **Platinum (Law Firms)**
 
-* Add multiple lawyers
-* Shared workspace
-* Admin controls
+- Add multiple lawyers
+- Shared workspace
+- Admin controls
 
 Payment Gateways:
 
-* JazzCash
-* EasyPaisa
-* Bank cards
-* In-app wallet
+- JazzCash
+- EasyPaisa
+- Bank cards
+- In-app wallet
 
 ---
 
-### ✔ **11. User Roles & Permissions**
+### 11. User Roles & Permissions
 
-#### **User Types**
+#### User Types
 
-* Lawyer
-* Litigant
-* Clerk
-* Vendor
-* Law Firm Admin
-* System Admin
-* Developer (Super Admin)
+- Lawyer
+- Litigant
+- Clerk
+- Vendor
+- Law Firm Admin
+- System Admin
+- Developer (Super Admin)
 
-#### **Permission Highlights**
+#### Permission Highlights
 
-* Only lawyers can access lawyer chat
-* Only bar members can join bar rooms
-* Only admins can create polls
-* Litigants cannot join lawyer chat
-* Developers have ALL ACCESS
-
----
-
-### ✔ **12. AI Features (Optional but important)**
-
-* AI contract drafting
-* AI case summarization
-* AI search optimization
-* Predictive relevance ranking
+- Only lawyers can access lawyer chat
+- Only bar members can join bar rooms
+- Only admins can create polls
+- Litigants cannot join lawyer chat
+- Developers have ALL ACCESS
 
 ---
 
-### ✔ **13. Analytics Dashboard**
+### 12. AI Features (Optional but important)
+
+- AI contract drafting
+- AI case summarization
+- AI search optimization
+- Predictive relevance ranking
+
+---
+
+### 13. Analytics Dashboard
 
 For Admin:
 
-* Total lawyers
-* Total litigants
-* Active subscriptions
-* Marketplace revenue
-* Poll participation metrics
-* Daily traffic
-* Server performance
-* Popular research topics
+- Total lawyers
+- Total litigants
+- Active subscriptions
+- Marketplace revenue
+- Poll participation metrics
+- Daily traffic
+- Server performance
+- Popular research topics
 
 For Lawyers:
 
-* Active cases
-* Hearing schedule
-* Productivity stats
-* Client activity
+- Active cases
+- Hearing schedule
+- Productivity stats
+- Client activity
 
 ---
 
-### ✔ **14. Security Infrastructure**
+### 14. Security Infrastructure
 
-* End-to-end encrypted chat
-* Encrypted documents
-* Role-based access control
-* Secure login (2FA optional)
-* Hashing for passwords
-* Data backup system
-* Tamper detection in polls
-* Regional data servers
+- End-to-end encrypted chat
+- Encrypted documents
+- Role-based access control
+- Secure login (2FA optional)
+- Hashing for passwords
+- Data backup system
+- Tamper detection in polls
+- Regional data servers
 
 ---
 
-# 5️⃣ **WORKFLOW DIAGRAMS (Text Form)**
+# 5. WORKFLOW DIAGRAMS (Text Form)
 
-## **A. Case Management Workflow**
+## A. Case Management Workflow
 
 1. Lawyer logs in
 2. Creates case → uploads documents
@@ -330,7 +327,7 @@ For Lawyers:
 
 ---
 
-## **B. Hiring Workflow**
+## B. Hiring Workflow
 
 1. Client searches lawyer
 2. Filters by specialty and city
@@ -341,7 +338,7 @@ For Lawyers:
 
 ---
 
-## **C. Marketplace Workflow**
+## C. Marketplace Workflow
 
 1. Vendor uploads item
 2. Admin approves
@@ -351,7 +348,7 @@ For Lawyers:
 
 ---
 
-## **D. Bar Polling Workflow**
+## D. Bar Polling Workflow
 
 1. Admin creates poll
 2. Users vote
@@ -360,115 +357,127 @@ For Lawyers:
 
 ---
 
-# 6️⃣ **DATABASE TABLE LIST (ERD Breakdown)**
+# 6. DATABASE TABLE LIST (ERD Breakdown)
 
-You can create ERD from this.
+### User Table
 
-### **User Table**
+| Field           | Type         |
+|-----------------|--------------|
+| id              | int          |
+| name            | varchar      |
+| email           | varchar      |
+| phone           | varchar      |
+| role            | varchar      |
+| bar_id          | int          |
+| language        | varchar      |
+| subscription    | varchar      |
 
-* id
-* name
-* email
-* phone
-* role
-* bar_id
-* language
-* subscription
+### Cases
 
-### **Cases**
+| Field               | Type         |
+|---------------------|--------------|
+| case_id             | int          |
+| lawyer_id           | int          |
+| client_id           | int          |
+| court               | varchar      |
+| type                | varchar      |
+| status              | varchar      |
+| next_hearing_date   | date         |
 
-* case_id
-* lawyer_id
-* client_id
-* court
-* type
-* status
-* next_hearing_date
+### Documents
 
-### **Documents**
+| Field       | Type         |
+|-------------|--------------|
+| doc_id      | int          |
+| case_id     | int          |
+| file_url    | varchar      |
+| uploaded_by | int          |
 
-* doc_id
-* case_id
-* file_url
-* uploaded_by
+### Marketplace Items
 
-### **Marketplace Items**
+| Field       | Type         |
+|-------------|--------------|
+| item_id     | int          |
+| seller_id   | int          |
+| name        | varchar      |
+| price       | decimal      |
+| status      | varchar      |
 
-* item_id
-* seller_id
-* name
-* price
-* status
+### Chats
 
-### **Chats**
+| Field       | Type         |
+|-------------|--------------|
+| chat_id     | int          |
+| bar_id      | int          |
+| sender_id   | int          |
+| message     | text         |
+| timestamp   | datetime     |
 
-* chat_id
-* bar_id
-* sender_id
-* message
-* timestamp
+### Polls
 
-### **Polls**
+| Field           | Type         |
+|-----------------|--------------|
+| poll_id         | int          |
+| bar_type        | varchar      |
+| candidate_list  | text         |
+| end_date        | date         |
 
-* poll_id
-* bar_type
-* candidate_list
-* end_date
+### Votes
 
-### **Votes**
-
-* vote_id
-* poll_id
-* user_id
-* choice
-
----
-
-# 7️⃣ **TECH STACK**
-
-### **Frontend**
-
-* Flutter / React Native
-* Vue (Web)
-
-### **Backend**
-
-* Node.js / Laravel
-* REST APIs
-* Firebase (optional)
-
-### **Database**
-
-* PostgreSQL
-* MongoDB (optional for chat)
-
-### **Storage**
-
-* AWS S3
-* Firebase Storage
+| Field     | Type         |
+|-----------|--------------|
+| vote_id   | int          |
+| poll_id   | int          |
+| user_id   | int          |
+| choice    | varchar      |
 
 ---
 
-# 8️⃣ **BUSINESS MODEL**
+# 7. TECH STACK
 
-* Subscription revenue
-* Marketplace commission (3–5%)
-* Premium search features
-* Sponsored lawyer profiles
-* Ads (for free users)
+### Frontend
+
+- Flutter / React Native
+- Vue (Web)
+
+### Backend
+
+- Node.js / Laravel
+- REST APIs
+- Firebase (optional)
+
+### Database
+
+- PostgreSQL
+- MongoDB (optional for chat)
+
+### Storage
+
+- AWS S3
+- Firebase Storage
 
 ---
 
-# 9️⃣ **ADMIN PANEL FEATURES**
+# 8. BUSINESS MODEL
 
-* Manage users
-* Verify lawyers
-* Manage marketplace
-* Approve products
-* Remove spam
-* Create bar polls
-* View analytics
-* Control languages
-* System settings
+- Subscription revenue
+- Marketplace commission (3–5%)
+- Premium search features
+- Sponsored lawyer profiles
+- Ads (for free users)
+
+---
+
+# 9. ADMIN PANEL FEATURES
+
+- Manage users
+- Verify lawyers
+- Manage marketplace
+- Approve products
+- Remove spam
+- Create bar polls
+- View analytics
+- Control languages
+- System settings
 
 ---
