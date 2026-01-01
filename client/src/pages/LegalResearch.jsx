@@ -37,7 +37,11 @@ export default function LegalResearch() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-primary-900">Legal Research Hub</h1>
-                    <p className="text-slate-600 text-sm">Access comprehensive legal resources and case law</p>
+                    <div className="flex gap-2 text-sm">
+                        <span className="text-slate-600">Access comprehensive legal resources</span>
+                        <span className="text-slate-300">|</span>
+                        <a href="/research/caselaw" className="text-accent-600 hover:underline font-semibold">Switch to Case Law Library</a>
+                    </div>
                 </div>
                 <button
                     onClick={() => axios.post('/laws/seed').then(() => fetchLaws())}

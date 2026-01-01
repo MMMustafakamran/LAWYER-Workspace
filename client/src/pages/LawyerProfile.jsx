@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
-import { MapPin, Briefcase, Star, Phone, Mail, Clock, Award, Calendar } from 'lucide-react';
+import { MapPin, Briefcase, Star, Phone, Mail, Clock, Award, Calendar, CheckCircle } from 'lucide-react';
 
 export default function LawyerProfile() {
     const { id } = useParams();
@@ -72,7 +72,15 @@ export default function LawyerProfile() {
                     </div>
 
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">{lawyer.name}</h1>
+                        <div className="flex items-center gap-2 mb-1">
+                            <h1 className="text-3xl font-bold text-gray-900">{lawyer.name}</h1>
+                            {lawyer.isVerified && (
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200" title="Verified Lawyer">
+                                    <CheckCircle className="w-3 h-3 mr-1" />
+                                    Verified
+                                </span>
+                            )}
+                        </div>
                         <p className="text-lg text-primary-600 font-medium mb-4">
                             {profile.specialization || 'Legal Practitioner'}
                         </p>

@@ -12,6 +12,7 @@ const orderSchema = new mongoose.Schema({
     status: { type: String, enum: ['PENDING', 'COMPLETED', 'CANCELLED'], default: 'PENDING' },
     paymentMethod: { type: String, enum: ['COD', 'CARD'], default: 'COD' },
     paymentStatus: { type: String, enum: ['PENDING', 'PAID'], default: 'PENDING' },
+    commission: { type: Number, default: 0 },
     items: [orderItemSchema]
 }, { timestamps: true });
 

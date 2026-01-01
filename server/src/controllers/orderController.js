@@ -18,6 +18,7 @@ const createOrder = async (req, res) => {
         const order = await Order.create({
             userId,
             total,
+            commission: total * 0.05, // 5% Commission
             status: 'COMPLETED',
             paymentMethod: paymentMethod || 'COD',
             paymentStatus,

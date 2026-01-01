@@ -35,6 +35,7 @@ app.use('/api/marketplace', require('./src/routes/marketplaceRoutes'));
 app.use('/api/chat', require('./src/routes/chatRoutes'));
 app.use('/api/polls', require('./src/routes/pollRoutes'));
 app.use('/api/notifications', require('./src/routes/notificationRoutes'));
+app.use('/api/payments', require('./src/routes/paymentRoutes'));
 app.use('/api/admin', require('./src/routes/adminRoutes'));
 app.use('/api/appointments', require('./src/routes/appointmentRoutes'));
 app.use('/api/orders', require('./src/routes/orderRoutes'));

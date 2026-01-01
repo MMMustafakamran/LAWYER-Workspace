@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Briefcase, Home, BookOpen, ShoppingBag, MessageSquare, Vote, Menu, X, Scale, User, Globe, Calendar } from 'lucide-react';
+import { LogOut, Briefcase, Home, BookOpen, ShoppingBag, MessageSquare, Vote, Menu, X, Scale, User, Globe, Calendar, Star } from 'lucide-react';
 import NotificationBell from '../components/NotificationBell';
 import { useState } from 'react';
 
@@ -80,6 +80,20 @@ export default function Layout() {
                         ))}
                     </nav>
 
+                    {/* Upgrade Link */}
+                    {(!user?.subscription || user?.subscription?.tier === 'FREE' || !user?.subscription?.tier) && ['LAWYER', 'LITIGANT'].includes(user.role) && (
+                        <div className="px-4 pb-2 mt-auto">
+                            <Link 
+                                to="/pricing" 
+                                onClick={() => setIsSidebarOpen(false)} 
+                                className="flex items-center justify-center gap-2 w-full px-4 py-2 text-sm font-bold text-amber-500 border border-amber-500/30 bg-amber-500/10 rounded-lg hover:bg-amber-500 hover:text-white transition-all duration-300"
+                            >
+                                <Star className="w-4 h-4" />
+                                Upgrade to Pro
+                            </Link>
+                        </div>
+                    )}
+
                     {/* User Section */}
                     <div className="p-4 border-t border-primary-800">
                         <Link 
@@ -92,7 +106,7 @@ export default function Layout() {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-white truncate">{user?.name}</p>
-                                <p className="text-xs text-primary-300 capitalize truncate">{user?.role?.replace('_', ' ') || 'User'}</p>
+                                <p className="text-xs text-primary-300 capitalize truncate">{user?.subscription?.tier || 'Free'} Plan</p>
                             </div>
                         </Link>
                     </div>

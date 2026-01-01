@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Upload, X, FileText, Router, Crop as CropIcon, Check, Settings } from 'lucide-react';
+import { Upload, X, FileText, Crop as CropIcon, Check } from 'lucide-react';
 import axios from '../api/axios';
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -245,14 +245,25 @@ export default function DocumentUpload({ caseId, onUploadSuccess }) {
                 <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-primary-500 transition-colors">
                     <div className="space-y-1 text-center">
                         <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                        <div className="flex text-sm text-gray-600">
+                        <div className="flex flex-col gap-2 text-sm text-gray-600">
                             <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
                                 <span>Upload a file</span>
                                 <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} accept="image/*,application/pdf" />
                             </label>
-                            <p className="pl-1">or drag and drop</p>
+                            
+                            <div className="flex items-center gap-2 justify-center my-2">
+                                <span className="h-px bg-gray-300 w-12"></span>
+                                <span className="text-gray-400 text-xs">OR</span>
+                                <span className="h-px bg-gray-300 w-12"></span>
+                            </div>
+
+                            <label htmlFor="camera-upload" className="relative cursor-pointer bg-primary-50 py-2 px-4 rounded-md font-medium text-primary-700 hover:bg-primary-100 transition-colors flex items-center justify-center gap-2">
+                                <div className="w-5 h-5 rounded-full border-2 border-primary-600"></div>
+                                <span>Scan Document</span>
+                                <input id="camera-upload" type="file" className="sr-only" capture="environment" accept="image/*" onChange={handleFileChange} />
+                            </label>
                         </div>
-                        <p className="text-xs text-gray-500">PNG, JPG, PDF up to 5MB</p>
+                        <p className="text-xs text-gray-500 mt-2">PNG, JPG, PDF up to 5MB</p>
                     </div>
                 </div>
             ) : (

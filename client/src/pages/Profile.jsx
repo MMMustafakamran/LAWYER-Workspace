@@ -19,7 +19,9 @@ export default function Profile() {
         experience: '',
         bio: '',
         location: '',
-        hourlyRate: ''
+        hourlyRate: '',
+        cnic: '',
+        licenseNumber: ''
     });
 
     useEffect(() => {
@@ -36,7 +38,9 @@ export default function Profile() {
                     experience: res.data.lawyerProfile.experience || '',
                     bio: res.data.lawyerProfile.bio || '',
                     location: res.data.lawyerProfile.location || '',
-                    hourlyRate: res.data.lawyerProfile.hourlyRate || ''
+                    hourlyRate: res.data.lawyerProfile.hourlyRate || '',
+                    cnic: res.data.lawyerProfile.cnic || '',
+                    licenseNumber: res.data.lawyerProfile.licenseNumber || ''
                 });
             }
         } catch (error) {
@@ -222,6 +226,26 @@ export default function Profile() {
                                     className="input-field mt-1"
                                     value={lawyerData.hourlyRate}
                                     onChange={(e) => setLawyerData({ ...lawyerData, hourlyRate: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">CNIC (Verification)</label>
+                                <input
+                                    type="text"
+                                    className="input-field mt-1"
+                                    placeholder="XXXXX-XXXXXXX-X"
+                                    value={lawyerData.cnic}
+                                    onChange={(e) => setLawyerData({ ...lawyerData, cnic: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Bar License No.</label>
+                                <input
+                                    type="text"
+                                    className="input-field mt-1"
+                                    placeholder="LB-XXXX"
+                                    value={lawyerData.licenseNumber}
+                                    onChange={(e) => setLawyerData({ ...lawyerData, licenseNumber: e.target.value })}
                                 />
                             </div>
                         </div>

@@ -17,7 +17,10 @@ import Elections from './pages/Elections';
 import Appointments from './pages/Appointments';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
+
 import Profile from './pages/Profile';
+import Pricing from './pages/Pricing';
+import CaseLaw from './pages/CaseLaw';
 
 function App() {
   return (
@@ -34,6 +37,7 @@ function App() {
               <Route path="/cases/new" element={<CreateCase />} />
               <Route path="/cases/:id" element={<CaseDetails />} />
               <Route path="/research" element={<LegalResearch />} />
+              <Route path="/research/caselaw" element={<CaseLaw />} />
               <Route path="/lawyers" element={<LawyerDirectory />} />
               <Route path="/lawyers/:id" element={<LawyerProfile />} />
               <Route path="/marketplace" element={<Marketplace />} />
@@ -41,6 +45,7 @@ function App() {
               <Route path="/elections" element={<Elections />} />
               <Route path="/appointments" element={<Appointments />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/pricing" element={<Pricing />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/" element={<Navigate to="/dashboard" replace />} />

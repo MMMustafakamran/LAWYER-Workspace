@@ -30,7 +30,7 @@ const getUsers = async (req, res) => {
     try {
         const users = await User.find()
             .sort({ createdAt: -1 })
-            .select('_id name email role createdAt lawyerProfile.specialization lawyerProfile.location');
+            .select('_id name email role createdAt isVerified lawyerProfile.specialization lawyerProfile.location lawyerProfile.cnic lawyerProfile.licenseNumber');
         res.json(users);
     } catch (error) {
         console.error(error);
@@ -41,11 +41,15 @@ const getUsers = async (req, res) => {
 const updateUserStatus = async (req, res) => {
     try {
         const { id } = req.params;
-        const { role } = req.body;
+        const { role, isVerified } = req.body;
+
+        const updateData = {};
+        if (role) updateData.role = role;
+        if (isVerified !== undefined) updateData.isVerified = isVerified;
 
         const user = await User.findByIdAndUpdate(
             id,
-            { role },
+            updateData,
             { new: true }
         );
 

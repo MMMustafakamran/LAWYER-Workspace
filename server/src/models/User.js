@@ -8,6 +8,9 @@ const lawyerProfileSchema = new mongoose.Schema({
     hourlyRate: Number,
     rating: { type: Number, default: 0.0 },
     reviewCount: { type: Number, default: 0 },
+    isVerified: { type: Boolean, default: false },
+    cnic: String,
+    licenseNumber: String,
     // NEW: Hiring features
     isAvailableForHiring: { type: Boolean, default: true },
     availability: {
@@ -33,7 +36,11 @@ const userSchema = new mongoose.Schema({
     },
     barId: String,
     language: { type: String, default: 'en' },
-    subscription: String,
+    subscription: {
+        tier: { type: String, enum: ['FREE', 'GOLD', 'PREMIUM', 'PLATINUM'], default: 'FREE' },
+        status: { type: String, enum: ['ACTIVE', 'EXPIRED'], default: 'ACTIVE' },
+        expiryDate: Date
+    },
     lawyerProfile: lawyerProfileSchema,
     // NEW: Profile picture
     profilePicture: String
