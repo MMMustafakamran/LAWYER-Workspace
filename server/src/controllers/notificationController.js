@@ -1,14 +1,12 @@
-const prisma = require('../utils/prisma');
+const Notification = require('../models/Notification');
 
 const getNotifications = async (req, res) => {
     try {
         const userId = req.user.id;
 
-        const notifications = await prisma.notification.findMany({
-            where: { userId },
-            orderBy: { createdAt: 'desc' },
-            take: 20 // Limit to recent 20
-        });
+        const notifications = await Notification.find({ userId })
+            .sort({ createdAt: -1 })
+            .limit(20);
 
         res.json(notifications);
     } catch (error) {
@@ -22,13 +20,10 @@ const markAsRead = async (req, res) => {
         const { id } = req.params;
         const userId = req.user.id;
 
-        await prisma.notification.updateMany({
-            where: {
-                id: parseInt(id),
-                userId
-            },
-            data: { isRead: true }
-        });
+        await Notification.findOneAndUpdate(
+            { _id: id, userId },
+            { isRead: true }
+        );
 
         res.json({ message: 'Marked as read' });
     } catch (error) {
@@ -39,12 +34,10 @@ const markAsRead = async (req, res) => {
 
 const createNotification = async (userId, message, type = 'INFO') => {
     try {
-        await prisma.notification.create({
-            data: {
-                userId,
-                message,
-                type
-            }
+        await Notification.create({
+            userId,
+            message,
+            type
         });
     } catch (error) {
         console.error('Failed to create notification', error);

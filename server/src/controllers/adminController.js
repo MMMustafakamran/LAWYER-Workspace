@@ -1,13 +1,16 @@
-const prisma = require('../utils/prisma');
+const User = require('../models/User');
+const Case = require('../models/Case');
+const Law = require('../models/Law');
+const Poll = require('../models/Poll');
 
 const getStats = async (req, res) => {
     try {
         const [userCount, lawyerCount, caseCount, lawCount, pollCount] = await Promise.all([
-            prisma.user.count(),
-            prisma.user.count({ where: { role: 'LAWYER' } }),
-            prisma.case.count(),
-            prisma.law.count(),
-            prisma.poll.count()
+            User.countDocuments(),
+            User.countDocuments({ role: 'LAWYER' }),
+            Case.countDocuments(),
+            Law.countDocuments(),
+            Poll.countDocuments()
         ]);
 
         res.json({
@@ -25,22 +28,9 @@ const getStats = async (req, res) => {
 
 const getUsers = async (req, res) => {
     try {
-        const users = await prisma.user.findMany({
-            orderBy: { createdAt: 'desc' },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                role: true,
-                createdAt: true,
-                lawyerProfile: {
-                    select: {
-                        specialization: true,
-                        location: true
-                    }
-                }
-            }
-        });
+        const users = await User.find()
+            .sort({ createdAt: -1 })
+            .select('_id name email role createdAt lawyerProfile.specialization lawyerProfile.location');
         res.json(users);
     } catch (error) {
         console.error(error);
@@ -51,12 +41,17 @@ const getUsers = async (req, res) => {
 const updateUserStatus = async (req, res) => {
     try {
         const { id } = req.params;
-        const { role } = req.body; // For now, just allowing role updates (e.g. verify lawyer)
+        const { role } = req.body;
 
-        const user = await prisma.user.update({
-            where: { id: parseInt(id) },
-            data: { role }
-        });
+        const user = await User.findByIdAndUpdate(
+            id,
+            { role },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
         res.json(user);
     } catch (error) {

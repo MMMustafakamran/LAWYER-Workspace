@@ -1,4 +1,5 @@
-const prisma = require('../utils/prisma');
+const Order = require('../models/Order');
+const MarketplaceItem = require('../models/MarketplaceItem');
 
 const createOrder = async (req, res) => {
     try {
@@ -7,24 +8,20 @@ const createOrder = async (req, res) => {
 
         const paymentStatus = paymentMethod === 'CARD' ? 'PAID' : 'PENDING';
 
-        const order = await prisma.order.create({
-            data: {
-                userId,
-                total,
-                status: 'COMPLETED',
-                paymentMethod: paymentMethod || 'COD',
-                paymentStatus,
-                items: {
-                    create: items.map(item => ({
-                        itemId: item.id,
-                        quantity: 1,
-                        price: item.price
-                    }))
-                }
-            },
-            include: {
-                items: true
-            }
+        // Create order with embedded items
+        const orderItems = items.map(item => ({
+            itemId: item.id,
+            quantity: 1,
+            price: item.price
+        }));
+
+        const order = await Order.create({
+            userId,
+            total,
+            status: 'COMPLETED',
+            paymentMethod: paymentMethod || 'COD',
+            paymentStatus,
+            items: orderItems
         });
 
         res.status(201).json(order);
@@ -37,18 +34,23 @@ const createOrder = async (req, res) => {
 const getMyOrders = async (req, res) => {
     try {
         const userId = req.user.id;
-        const orders = await prisma.order.findMany({
-            where: { userId },
-            include: {
-                items: {
-                    include: {
-                        item: true
-                    }
-                }
-            },
-            orderBy: { createdAt: 'desc' }
-        });
-        res.json(orders);
+        const orders = await Order.find({ userId })
+            .sort({ createdAt: -1 });
+
+        // Populate item details for each order
+        const ordersWithItems = await Promise.all(orders.map(async (order) => {
+            const orderObj = order.toObject();
+            orderObj.items = await Promise.all(orderObj.items.map(async (orderItem) => {
+                const item = await MarketplaceItem.findById(orderItem.itemId);
+                return {
+                    ...orderItem,
+                    item
+                };
+            }));
+            return orderObj;
+        }));
+
+        res.json(ordersWithItems);
     } catch (error) {
         console.error('Error fetching orders:', error);
         res.status(500).json({ error: 'Failed to fetch orders' });

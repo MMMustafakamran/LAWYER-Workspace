@@ -1,33 +1,21 @@
-const prisma = require('../utils/prisma');
+const User = require('../models/User');
+const Case = require('../models/Case');
 
 const getLawyers = async (req, res) => {
     try {
         const { specialization, location } = req.query;
 
-        const where = {
-            role: 'LAWYER'
-        };
+        let filter = { role: 'LAWYER' };
 
-        if (specialization || location) {
-            where.lawyerProfile = {};
-            if (specialization && specialization !== 'All') {
-                where.lawyerProfile.specialization = specialization;
-            }
-            if (location) {
-                where.lawyerProfile.location = { contains: location, mode: 'insensitive' };
-            }
+        if (specialization && specialization !== 'All') {
+            filter['lawyerProfile.specialization'] = specialization;
+        }
+        if (location) {
+            filter['lawyerProfile.location'] = { $regex: location, $options: 'i' };
         }
 
-        const lawyers = await prisma.user.findMany({
-            where,
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                phone: true,
-                lawyerProfile: true
-            }
-        });
+        const lawyers = await User.find(filter)
+            .select('_id name email phone lawyerProfile');
 
         res.json(lawyers);
     } catch (error) {
@@ -39,31 +27,23 @@ const getLawyers = async (req, res) => {
 const getLawyerById = async (req, res) => {
     try {
         const { id } = req.params;
-        const lawyer = await prisma.user.findUnique({
-            where: {
-                id: parseInt(id),
-                role: 'LAWYER'
-            },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                phone: true,
-                lawyerProfile: true,
-                casesAsLawyer: {
-                    select: {
-                        id: true,
-                        title: true,
-                        status: true
-                    }
-                }
-            }
-        });
+        const lawyer = await User.findOne({ _id: id, role: 'LAWYER' })
+            .select('_id name email phone lawyerProfile');
 
         if (!lawyer) {
             return res.status(404).json({ message: 'Lawyer not found' });
         }
-        res.json(lawyer);
+
+        // Get lawyer's cases
+        const cases = await Case.find({ lawyerId: id })
+            .select('_id title status');
+
+        const result = {
+            ...lawyer.toObject(),
+            casesAsLawyer: cases
+        };
+
+        res.json(result);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
@@ -75,26 +55,26 @@ const updateProfile = async (req, res) => {
         const userId = req.user.id;
         const { specialization, experience, bio, location, hourlyRate } = req.body;
 
-        const profile = await prisma.lawyerProfile.upsert({
-            where: { userId },
-            update: {
-                specialization,
-                experience: experience ? parseInt(experience) : undefined,
-                bio,
-                location,
-                hourlyRate: hourlyRate ? parseFloat(hourlyRate) : undefined
-            },
-            create: {
-                userId,
-                specialization,
-                experience: experience ? parseInt(experience) : undefined,
-                bio,
-                location,
-                hourlyRate: hourlyRate ? parseFloat(hourlyRate) : undefined
-            }
-        });
+        const profileData = {
+            specialization,
+            experience: experience ? parseInt(experience) : undefined,
+            bio,
+            location,
+            hourlyRate: hourlyRate ? parseFloat(hourlyRate) : undefined
+        };
 
-        res.json(profile);
+        // Remove undefined values
+        Object.keys(profileData).forEach(key => 
+            profileData[key] === undefined && delete profileData[key]
+        );
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { lawyerProfile: profileData },
+            { new: true }
+        ).select('lawyerProfile');
+
+        res.json(user.lawyerProfile);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });

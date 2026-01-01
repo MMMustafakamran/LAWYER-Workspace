@@ -1,5 +1,7 @@
 const socketIo = require('socket.io');
-const prisma = require('../utils/prisma');
+const Chat = require('../models/Chat');
+const Notification = require('../models/Notification');
+const User = require('../models/User');
 
 let io;
 
@@ -24,40 +26,38 @@ const initSocket = (server) => {
 
             // Save to database
             try {
-                const savedMessage = await prisma.chat.create({
-                    data: {
-                        senderId,
-                        receiverId,
-                        message,
-                        barId
-                    },
-                    include: {
-                        sender: {
-                            select: { name: true }
-                        }
-                    }
+                const savedMessage = await Chat.create({
+                    senderId,
+                    receiverId,
+                    message,
+                    barId
                 });
 
+                // Get sender info
+                const sender = await User.findById(senderId).select('name');
+                const messageWithSender = {
+                    ...savedMessage.toObject(),
+                    sender: { name: sender?.name }
+                };
+
                 // Broadcast to chat room
-                io.to(barId).emit('receive_message', savedMessage);
+                io.to(barId).emit('receive_message', messageWithSender);
 
                 // Notify receiver if they are in their personal room
                 if (receiverId) {
                     // Send a notification event
                     io.to(`user_${receiverId}`).emit('new_notification', {
                         type: 'MESSAGE',
-                        message: `New message from ${savedMessage.sender.name}`,
+                        message: `New message from ${sender?.name}`,
                         conversationId: barId,
-                        data: savedMessage
+                        data: messageWithSender
                     });
 
                     // Persist notification
-                    await prisma.notification.create({
-                        data: {
-                            userId: receiverId,
-                            message: `New message from ${savedMessage.sender.name}`,
-                            type: 'MESSAGE'
-                        }
+                    await Notification.create({
+                        userId: receiverId,
+                        message: `New message from ${sender?.name}`,
+                        type: 'MESSAGE'
                     });
                 }
             } catch (error) {

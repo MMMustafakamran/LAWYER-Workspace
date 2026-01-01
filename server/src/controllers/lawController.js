@@ -1,8 +1,8 @@
-const prisma = require('../utils/prisma');
+const Law = require('../models/Law');
 
 const getAllLaws = async (req, res) => {
     try {
-        const laws = await prisma.law.findMany();
+        const laws = await Law.find();
         res.json(laws);
     } catch (error) {
         console.error(error);
@@ -13,9 +13,7 @@ const getAllLaws = async (req, res) => {
 const getLawById = async (req, res) => {
     try {
         const { id } = req.params;
-        const law = await prisma.law.findUnique({
-            where: { id: parseInt(id) }
-        });
+        const law = await Law.findById(id);
 
         if (!law) {
             return res.status(404).json({ message: 'Law not found' });
@@ -31,21 +29,19 @@ const searchLaws = async (req, res) => {
     try {
         const { query, category } = req.query;
 
-        const where = {};
+        let filter = {};
+        
         if (query) {
-            where.OR = [
-                { title: { contains: query, mode: 'insensitive' } },
-                { content: { contains: query, mode: 'insensitive' } }
+            filter.$or = [
+                { title: { $regex: query, $options: 'i' } },
+                { content: { $regex: query, $options: 'i' } }
             ];
         }
         if (category && category !== 'All') {
-            where.category = category;
+            filter.category = category;
         }
 
-        const laws = await prisma.law.findMany({
-            where,
-            orderBy: { title: 'asc' }
-        });
+        const laws = await Law.find(filter).sort({ title: 1 });
 
         res.json(laws);
     } catch (error) {
@@ -54,40 +50,38 @@ const searchLaws = async (req, res) => {
     }
 };
 
-// Temporary function to seed some data (optional, can be removed later)
+// Seed function
 const seedLaws = async (req, res) => {
     try {
-        const count = await prisma.law.count();
+        const count = await Law.countDocuments();
         if (count > 0) return res.json({ message: 'Laws already seeded' });
 
-        await prisma.law.createMany({
-            data: [
-                {
-                    title: 'Pakistan Penal Code (PPC)',
-                    description: 'The primary criminal code of Pakistan.',
-                    category: 'Criminal',
-                    content: 'The Pakistan Penal Code (PPC) is a penal code for all offences charged in Pakistan. It was originally prepared by Lord Macaulay with a great consultation in 1860 on the behalf of the Government of India as the Indian Penal Code. After the independence in 1947, Pakistan inherited the same code and it was subsequently named after Pakistan.'
-                },
-                {
-                    title: 'Code of Civil Procedure (CPC)',
-                    description: 'Procedural law for administration of civil proceedings.',
-                    category: 'Civil',
-                    content: 'The Code of Civil Procedure, 1908 is a procedural law related to the administration of civil proceedings in Pakistan. It consolidates and amends the laws relating to the procedure of the Courts of Civil Judicature.'
-                },
-                {
-                    title: 'Companies Act 2017',
-                    description: 'Law governing companies in Pakistan.',
-                    category: 'Corporate',
-                    content: 'An Act to reform and re-enact the law relating to companies and for matters connected therewith. It replaced the Companies Ordinance, 1984.'
-                },
-                {
-                    title: 'Family Courts Act 1964',
-                    description: 'Law relating to Family Courts.',
-                    category: 'Family',
-                    content: 'An Act to make provision for the establishment of Family Courts for the expeditious settlement and disposal of disputes relating to marriage and family affairs and for matters connected therewith.'
-                }
-            ]
-        });
+        await Law.insertMany([
+            {
+                title: 'Pakistan Penal Code (PPC)',
+                description: 'The primary criminal code of Pakistan.',
+                category: 'Criminal',
+                content: 'The Pakistan Penal Code (PPC) is a penal code for all offences charged in Pakistan. It was originally prepared by Lord Macaulay with a great consultation in 1860 on the behalf of the Government of India as the Indian Penal Code. After the independence in 1947, Pakistan inherited the same code and it was subsequently named after Pakistan.'
+            },
+            {
+                title: 'Code of Civil Procedure (CPC)',
+                description: 'Procedural law for administration of civil proceedings.',
+                category: 'Civil',
+                content: 'The Code of Civil Procedure, 1908 is a procedural law related to the administration of civil proceedings in Pakistan. It consolidates and amends the laws relating to the procedure of the Courts of Civil Judicature.'
+            },
+            {
+                title: 'Companies Act 2017',
+                description: 'Law governing companies in Pakistan.',
+                category: 'Corporate',
+                content: 'An Act to reform and re-enact the law relating to companies and for matters connected therewith. It replaced the Companies Ordinance, 1984.'
+            },
+            {
+                title: 'Family Courts Act 1964',
+                description: 'Law relating to Family Courts.',
+                category: 'Family',
+                content: 'An Act to make provision for the establishment of Family Courts for the expeditious settlement and disposal of disputes relating to marriage and family affairs and for matters connected therewith.'
+            }
+        ]);
         res.json({ message: 'Laws seeded successfully' });
     } catch (error) {
         console.error(error);

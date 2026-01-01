@@ -6,10 +6,15 @@ const path = require('path');
 dotenv.config({ path: './database_env.env' });
 
 const http = require('http');
+const connectDB = require('./src/utils/db');
 const { initSocket } = require('./src/socket/socket');
 
 const app = express();
 const server = http.createServer(app);
+
+// Connect to MongoDB
+connectDB();
+
 const io = initSocket(server);
 
 const PORT = process.env.PORT || 5000;
@@ -35,7 +40,7 @@ app.use('/api/appointments', require('./src/routes/appointmentRoutes'));
 app.use('/api/orders', require('./src/routes/orderRoutes'));
 
 app.get('/', (req, res) => {
-    res.send('Lawyer App API is running');
+    res.send('Lawyer App API is running (MongoDB)');
 });
 
 server.listen(PORT, () => {

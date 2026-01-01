@@ -1,4 +1,5 @@
-const prisma = require('../utils/prisma');
+const Case = require('../models/Case');
+const Document = require('../models/Document');
 
 const createCase = async (req, res) => {
     try {
@@ -8,26 +9,22 @@ const createCase = async (req, res) => {
         const { title, caseNumber, court, type, status, nextHearingDate } = req.body;
 
         let lawyerId = req.user.id;
-        let clientId = req.body.clientId ? parseInt(req.body.clientId) : null;
+        let clientId = req.body.clientId || null;
 
         // If the creator is a Litigant, assign them as the client
         if (req.user.role === 'LITIGANT') {
             clientId = req.user.id;
-            // For now, we keep lawyerId as the creator (even if litigant) to satisfy the DB constraint
-            // until we have a "Select Lawyer" feature.
         }
 
-        const newCase = await prisma.case.create({
-            data: {
-                title,
-                caseNumber,
-                court,
-                type,
-                status: status || 'OPEN',
-                nextHearingDate: nextHearingDate ? new Date(nextHearingDate) : null,
-                lawyerId,
-                clientId,
-            },
+        const newCase = await Case.create({
+            title,
+            caseNumber,
+            court,
+            type,
+            status: status || 'OPEN',
+            nextHearingDate: nextHearingDate ? new Date(nextHearingDate) : null,
+            lawyerId,
+            clientId,
         });
 
         console.log('Case Created:', newCase);
@@ -43,21 +40,24 @@ const getCases = async (req, res) => {
         const userId = req.user.id;
 
         // Show cases where the user is either the lawyer OR the client
-        const cases = await prisma.case.findMany({
-            where: {
-                OR: [
-                    { lawyerId: userId },
-                    { clientId: userId }
-                ]
-            },
-            include: {
-                client: { select: { name: true, email: true } },
-                lawyer: { select: { name: true, email: true } }
-            },
-            orderBy: { createdAt: 'desc' }
-        });
+        const cases = await Case.find({
+            $or: [
+                { lawyerId: userId },
+                { clientId: userId }
+            ]
+        })
+            .populate('clientId', 'name email')
+            .populate('lawyerId', 'name email')
+            .sort({ createdAt: -1 });
 
-        res.json(cases);
+        // Transform to match expected format
+        const result = cases.map(c => ({
+            ...c.toObject(),
+            client: c.clientId,
+            lawyer: c.lawyerId
+        }));
+
+        res.json(result);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
@@ -67,15 +67,21 @@ const getCases = async (req, res) => {
 const getCaseById = async (req, res) => {
     try {
         const { id } = req.params;
-        const caseItem = await prisma.case.findUnique({
-            where: { id: parseInt(id) },
-            include: { documents: true }
-        });
+        const caseItem = await Case.findById(id);
 
         if (!caseItem) {
             return res.status(404).json({ message: 'Case not found' });
         }
-        res.json(caseItem);
+
+        // Get documents for this case
+        const documents = await Document.find({ caseId: id });
+        
+        const result = {
+            ...caseItem.toObject(),
+            documents
+        };
+
+        res.json(result);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
@@ -91,25 +97,21 @@ const uploadDocument = async (req, res) => {
     }
 
     try {
-        const caseItem = await prisma.case.findUnique({
-            where: { id: parseInt(id) }
-        });
+        const caseItem = await Case.findById(id);
 
         if (!caseItem) {
             return res.status(404).json({ error: 'Case not found' });
         }
 
         // Check authorization
-        if (caseItem.lawyerId !== req.user.id && caseItem.clientId !== req.user.id) {
+        if (caseItem.lawyerId.toString() !== req.user.id && caseItem.clientId?.toString() !== req.user.id) {
             return res.status(403).json({ error: 'Not authorized to upload documents to this case' });
         }
 
-        const document = await prisma.document.create({
-            data: {
-                caseId: parseInt(id),
-                fileUrl: `/uploads/${file.filename}`,
-                uploadedBy: req.user.id
-            }
+        const document = await Document.create({
+            caseId: id,
+            fileUrl: `/uploads/${file.filename}`,
+            uploadedBy: req.user.id
         });
 
         res.status(201).json(document);
