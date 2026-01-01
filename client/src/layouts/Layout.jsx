@@ -82,15 +82,19 @@ export default function Layout() {
 
                     {/* User Section */}
                     <div className="p-4 border-t border-primary-800">
-                        <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary-800">
+                        <Link 
+                            to="/profile" 
+                            onClick={() => setIsSidebarOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary-800 hover:bg-primary-700 transition-colors cursor-pointer"
+                        >
                             <div className="w-9 h-9 rounded-full bg-primary-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                                 {user?.name?.charAt(0) || 'U'}
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-white truncate">{user?.name}</p>
-                                <p className="text-xs text-primary-300 capitalize truncate">{user?.role || 'User'}</p>
+                                <p className="text-xs text-primary-300 capitalize truncate">{user?.role?.replace('_', ' ') || 'User'}</p>
                             </div>
-                        </div>
+                        </Link>
                     </div>
                 </div>
 

@@ -25,7 +25,7 @@ export default function AdminUsers() {
     const handleRoleUpdate = async (userId, newRole) => {
         try {
             await axios.put(`/admin/users/${userId}`, { role: newRole });
-            setUsers(users.map(u => u.id === userId ? { ...u, role: newRole } : u));
+            setUsers(users.map(u => u._id === userId ? { ...u, role: newRole } : u));
         } catch (error) {
             console.error('Failed to update role', error);
             alert('Failed to update user role');
@@ -69,7 +69,7 @@ export default function AdminUsers() {
                             <tr><td colSpan="4" className="px-6 py-4 text-center">Loading...</td></tr>
                         ) : filteredUsers.length > 0 ? (
                             filteredUsers.map((user) => (
-                                <tr key={user.id}>
+                                <tr key={user._id}>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
                                             <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold">
@@ -95,7 +95,7 @@ export default function AdminUsers() {
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                                         {user.role === 'LITIGANT' && (
                                             <button
-                                                onClick={() => handleRoleUpdate(user.id, 'LAWYER')}
+                                                onClick={() => handleRoleUpdate(user._id, 'LAWYER')}
                                                 className="text-indigo-600 hover:text-indigo-900 flex items-center"
                                             >
                                                 <Shield className="w-4 h-4 mr-1" /> Make Lawyer
@@ -103,7 +103,7 @@ export default function AdminUsers() {
                                         )}
                                         {user.role === 'LAWYER' && (
                                             <button
-                                                onClick={() => handleRoleUpdate(user.id, 'LITIGANT')}
+                                                onClick={() => handleRoleUpdate(user._id, 'LITIGANT')}
                                                 className="text-orange-600 hover:text-orange-900 flex items-center"
                                             >
                                                 <Ban className="w-4 h-4 mr-1" /> Revoke Lawyer

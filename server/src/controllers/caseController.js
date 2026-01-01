@@ -1,17 +1,14 @@
 const Case = require('../models/Case');
 const Document = require('../models/Document');
+const User = require('../models/User');
 
 const createCase = async (req, res) => {
     try {
-        console.log('Create Case Request Body:', req.body);
-        console.log('Create Case User:', req.user);
-
         const { title, caseNumber, court, type, status, nextHearingDate } = req.body;
 
         let lawyerId = req.user.id;
         let clientId = req.body.clientId || null;
 
-        // If the creator is a Litigant, assign them as the client
         if (req.user.role === 'LITIGANT') {
             clientId = req.user.id;
         }
@@ -25,9 +22,9 @@ const createCase = async (req, res) => {
             nextHearingDate: nextHearingDate ? new Date(nextHearingDate) : null,
             lawyerId,
             clientId,
+            statusHistory: [{ status: status || 'OPEN', changedBy: req.user.id }]
         });
 
-        console.log('Case Created:', newCase);
         res.status(201).json(newCase);
     } catch (error) {
         console.error('Create Case Error:', error);
@@ -39,18 +36,17 @@ const getCases = async (req, res) => {
     try {
         const userId = req.user.id;
 
-        // Show cases where the user is either the lawyer OR the client
         const cases = await Case.find({
             $or: [
                 { lawyerId: userId },
-                { clientId: userId }
+                { clientId: userId },
+                { sharedWith: userId }
             ]
         })
             .populate('clientId', 'name email')
             .populate('lawyerId', 'name email')
             .sort({ createdAt: -1 });
 
-        // Transform to match expected format
         const result = cases.map(c => ({
             ...c.toObject(),
             client: c.clientId,
@@ -64,24 +60,149 @@ const getCases = async (req, res) => {
     }
 };
 
+// NEW: Search cases
+const searchCases = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { query, status, court, type } = req.query;
+
+        let filter = {
+            $or: [
+                { lawyerId: userId },
+                { clientId: userId },
+                { sharedWith: userId }
+            ]
+        };
+
+        if (query) {
+            filter.$and = filter.$and || [];
+            filter.$and.push({
+                $or: [
+                    { title: { $regex: query, $options: 'i' } },
+                    { caseNumber: { $regex: query, $options: 'i' } },
+                    { court: { $regex: query, $options: 'i' } }
+                ]
+            });
+        }
+
+        if (status) filter.status = status;
+        if (court) filter.court = { $regex: court, $options: 'i' };
+        if (type) filter.type = type;
+
+        const cases = await Case.find(filter)
+            .populate('clientId', 'name email')
+            .populate('lawyerId', 'name email')
+            .sort({ createdAt: -1 });
+
+        res.json(cases);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 const getCaseById = async (req, res) => {
     try {
         const { id } = req.params;
-        const caseItem = await Case.findById(id);
+        const caseItem = await Case.findById(id)
+            .populate('lawyerId', 'name email phone')
+            .populate('clientId', 'name email phone')
+            .populate('sharedWith', 'name email')
+            .populate('notes.createdBy', 'name');
 
         if (!caseItem) {
             return res.status(404).json({ message: 'Case not found' });
         }
 
-        // Get documents for this case
         const documents = await Document.find({ caseId: id });
         
-        const result = {
+        res.json({
             ...caseItem.toObject(),
-            documents
-        };
+            documents,
+            lawyer: caseItem.lawyerId,
+            client: caseItem.clientId
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
 
-        res.json(result);
+// NEW: Update case status
+const updateCaseStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const caseItem = await Case.findById(id);
+        if (!caseItem) {
+            return res.status(404).json({ message: 'Case not found' });
+        }
+
+        caseItem.status = status;
+        caseItem.statusHistory.push({
+            status,
+            changedBy: req.user.id
+        });
+        await caseItem.save();
+
+        res.json(caseItem);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// NEW: Add note to case
+const addNote = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { content } = req.body;
+
+        const caseItem = await Case.findById(id);
+        if (!caseItem) {
+            return res.status(404).json({ message: 'Case not found' });
+        }
+
+        caseItem.notes.push({
+            content,
+            createdBy: req.user.id
+        });
+        await caseItem.save();
+
+        res.status(201).json(caseItem.notes[caseItem.notes.length - 1]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// NEW: Share case with user
+const shareCase = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email } = req.body;
+
+        const caseItem = await Case.findById(id);
+        if (!caseItem) {
+            return res.status(404).json({ message: 'Case not found' });
+        }
+
+        // Find user by email
+        const userToShare = await User.findOne({ email });
+        if (!userToShare) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Check if already shared
+        if (caseItem.sharedWith.includes(userToShare._id)) {
+            return res.status(400).json({ message: 'Case already shared with this user' });
+        }
+
+        caseItem.sharedWith.push(userToShare._id);
+        await caseItem.save();
+
+        res.json({ message: 'Case shared successfully', sharedWith: userToShare.name });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
@@ -98,14 +219,12 @@ const uploadDocument = async (req, res) => {
 
     try {
         const caseItem = await Case.findById(id);
-
         if (!caseItem) {
             return res.status(404).json({ error: 'Case not found' });
         }
 
-        // Check authorization
         if (caseItem.lawyerId.toString() !== req.user.id && caseItem.clientId?.toString() !== req.user.id) {
-            return res.status(403).json({ error: 'Not authorized to upload documents to this case' });
+            return res.status(403).json({ error: 'Not authorized' });
         }
 
         const document = await Document.create({
@@ -124,6 +243,10 @@ const uploadDocument = async (req, res) => {
 module.exports = {
     createCase,
     getCases,
+    searchCases,
     getCaseById,
+    updateCaseStatus,
+    addNote,
+    shareCase,
     uploadDocument
 };

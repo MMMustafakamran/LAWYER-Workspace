@@ -56,35 +56,17 @@ export default function Chat() {
     useEffect(() => {
         const initChat = async () => {
             if (receiverId && user) {
-                const rId = parseInt(receiverId);
+                // Use string IDs for MongoDB (no parseInt)
+                const rId = receiverId;
                 const uId = user.id;
-                const roomId = `private_${Math.min(rId, uId)}_${Math.max(rId, uId)}`;
+                // Create room ID with sorted string IDs
+                const roomId = `private_${[rId, uId].sort().join('_')}`;
                 setActiveRoom(roomId);
 
-                // Fetch user details if not known
-                try {
-                    // We can reuse getConversations or just fetch user details
-                    // Assuming we have an endpoint for user details or just generic "get user"
-                    // For now, we'll try to find in existing conversations or rely on fetching history which might return sender details? 
-                    // No, fetchHistory returns messages.
-                    // Better: fetch user info.
-                    const res = await axios.get(`/users/${rId}`); // Assuming this endpoint exists, or we use a new one
-                    // Wait, there might not be a general user endpoint.
-                    // Let's use what we have. 
-                    // We can mock it or just set ID.
-                    // But we need name for the header.
-                    // Let's check if we have it in conversations.
-                    const existing = conversations.find(c => c.otherUser.id === rId);
-                    if (existing) {
-                        setActiveUser(existing.otherUser);
-                    } else {
-                        // Fetch it. 
-                        // If no endpoint, we might have trouble.
-                        // But we can assume the user navigated from a place where they saw the user.
-                        // Let's check available endpoints.
-                    }
-                } catch (e) {
-                    console.error("Error setting up chat", e);
+                // Try to find user in existing conversations
+                const existing = conversations.find(c => c.otherUser?._id === rId || c.otherUser?.id === rId);
+                if (existing) {
+                    setActiveUser(existing.otherUser);
                 }
             } else if (conversations.length > 0 && !activeRoom) {
                 setActiveRoom(conversations[0].roomId);
@@ -141,9 +123,9 @@ export default function Chat() {
 
         if (chatType === 'private') {
             if (activeUser) {
-                currentReceiverId = activeUser.id;
+                currentReceiverId = activeUser._id || activeUser.id;
             } else if (receiverId) {
-                currentReceiverId = parseInt(receiverId);
+                currentReceiverId = receiverId; // MongoDB string ID, no parseInt
             }
         } else {
             // Group chat

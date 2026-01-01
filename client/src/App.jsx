@@ -17,6 +17,7 @@ import Elections from './pages/Elections';
 import Appointments from './pages/Appointments';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
               <Route path="/chat" element={<Chat />} />
               <Route path="/elections" element={<Elections />} />
               <Route path="/appointments" element={<Appointments />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/" element={<Navigate to="/dashboard" replace />} />

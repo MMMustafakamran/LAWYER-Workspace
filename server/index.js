@@ -38,6 +38,7 @@ app.use('/api/notifications', require('./src/routes/notificationRoutes'));
 app.use('/api/admin', require('./src/routes/adminRoutes'));
 app.use('/api/appointments', require('./src/routes/appointmentRoutes'));
 app.use('/api/orders', require('./src/routes/orderRoutes'));
+app.use('/api/profile', require('./src/routes/profileRoutes'));
 
 app.get('/', (req, res) => {
     res.send('Lawyer App API is running (MongoDB)');

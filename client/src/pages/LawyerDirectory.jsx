@@ -84,7 +84,7 @@ export default function LawyerDirectory() {
                     <p className="col-span-full text-center py-8 text-gray-500">Loading directory...</p>
                 ) : lawyers.length > 0 ? (
                     lawyers.map((lawyer) => (
-                        <div key={lawyer.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                        <div key={lawyer._id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
                             <div className="p-6">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-xl">
@@ -109,7 +109,7 @@ export default function LawyerDirectory() {
                                     {lawyer.lawyerProfile?.location || 'Location not specified'}
                                 </div>
                                 <Link
-                                    to={`/lawyers/${lawyer.id}`}
+                                    to={`/lawyers/${lawyer._id}`}
                                     className="block w-full text-center btn-secondary"
                                 >
                                     View Profile

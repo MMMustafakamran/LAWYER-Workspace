@@ -28,7 +28,7 @@ export default function LawyerProfile() {
     const handleBookAppointment = async () => {
         try {
             await axios.post('/appointments', {
-                lawyerId: lawyer.id,
+                lawyerId: lawyer._id,
                 ...appointmentData
             });
             alert('Appointment request sent!');
@@ -59,7 +59,7 @@ export default function LawyerProfile() {
                         </div>
                         <div className="flex gap-3">
                             <button
-                                onClick={() => navigate(`/chat?receiverId=${lawyer.userId}`)}
+                                onClick={() => navigate(`/chat?receiverId=${lawyer._id}`)}
                                 className="btn-primary shadow-lg flex items-center"
                             >
                                 <Mail className="w-4 h-4 mr-2" />
@@ -143,7 +143,7 @@ export default function LawyerProfile() {
                     {lawyer.casesAsLawyer && lawyer.casesAsLawyer.length > 0 ? (
                         <ul className="space-y-3">
                             {lawyer.casesAsLawyer.slice(0, 3).map(c => (
-                                <li key={c.id} className="text-sm border-b border-gray-100 last:border-0 pb-2 last:pb-0">
+                                <li key={c._id} className="text-sm border-b border-gray-100 last:border-0 pb-2 last:pb-0">
                                     <span className="font-medium text-gray-900">{c.title}</span>
                                     <span className="block text-xs text-gray-500">{c.status}</span>
                                 </li>

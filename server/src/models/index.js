@@ -10,6 +10,8 @@ const Law = require('./Law');
 const Notification = require('./Notification');
 const Order = require('./Order');
 const Appointment = require('./Appointment');
+const HiringRequest = require('./HiringRequest');
+const Cart = require('./Cart');
 
 module.exports = {
     User,
@@ -22,5 +24,7 @@ module.exports = {
     Law,
     Notification,
     Order,
-    Appointment
+    Appointment,
+    HiringRequest,
+    Cart
 };

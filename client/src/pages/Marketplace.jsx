@@ -44,14 +44,14 @@ export default function Marketplace() {
 
     // Cart Logic
     const addToCart = (item) => {
-        if (!cart.find(i => i.id === item.id)) {
+        if (!cart.find(i => i._id === item._id)) {
             setCart([...cart, item]);
             setIsCartOpen(true);
         }
     };
 
     const removeFromCart = (itemId) => {
-        setCart(cart.filter(item => item.id !== itemId));
+        setCart(cart.filter(item => item._id !== itemId));
     };
 
     const cartTotal = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
@@ -127,7 +127,7 @@ export default function Marketplace() {
                                     ) : (
                                         <ul className="divide-y divide-gray-200">
                                             {cart.map((item) => (
-                                                <li key={item.id} className="py-4 flex">
+                                                <li key={item._id} className="py-4 flex">
                                                     <div className="flex-1 ml-4">
                                                         <div className="flex justify-between text-base font-medium text-gray-900">
                                                             <h3>{item.name}</h3>
@@ -136,7 +136,7 @@ export default function Marketplace() {
                                                         <p className="mt-1 text-sm text-gray-500">{item.seller?.name || 'Seller'}</p>
                                                         <div className="flex justify-end mt-2">
                                                             <button
-                                                                onClick={() => removeFromCart(item.id)}
+                                                                onClick={() => removeFromCart(item._id)}
                                                                 className="text-red-500 hover:text-red-700 text-sm font-medium flex items-center"
                                                             >
                                                                 <Trash2 className="w-4 h-4 mr-1" /> Remove
@@ -264,7 +264,7 @@ export default function Marketplace() {
                     <p className="col-span-full text-center py-8 text-gray-500">Loading marketplace...</p>
                 ) : items.length > 0 ? (
                     items.map((item) => (
-                        <div key={item.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+                        <div key={item._id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col">
                             <div className="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
                                 {item.imageUrl ? (
                                     <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover transition-transform hover:scale-105" />
@@ -287,10 +287,10 @@ export default function Marketplace() {
                                     </span>
                                     <button
                                         onClick={() => addToCart(item)}
-                                        disabled={cart.some(cartItem => cartItem.id === item.id)}
-                                        className={`text-sm font-medium ${cart.some(cartItem => cartItem.id === item.id) ? 'text-green-600 cursor-default' : 'text-accent-600 hover:text-accent-700'}`}
+                                        disabled={cart.some(cartItem => cartItem._id === item._id)}
+                                        className={`text-sm font-medium ${cart.some(cartItem => cartItem._id === item._id) ? 'text-green-600 cursor-default' : 'text-accent-600 hover:text-accent-700'}`}
                                     >
-                                        {cart.some(cartItem => cartItem.id === item.id) ? 'Added to Cart' : 'Add to Cart'}
+                                        {cart.some(cartItem => cartItem._id === item._id) ? 'Added to Cart' : 'Add to Cart'}
                                     </button>
                                 </div>
                             </div>

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 
 const lawyerProfileSchema = new mongoose.Schema({
     specialization: String,
@@ -8,7 +7,18 @@ const lawyerProfileSchema = new mongoose.Schema({
     location: String,
     hourlyRate: Number,
     rating: { type: Number, default: 0.0 },
-    reviewCount: { type: Number, default: 0 }
+    reviewCount: { type: Number, default: 0 },
+    // NEW: Hiring features
+    isAvailableForHiring: { type: Boolean, default: true },
+    availability: {
+        monday: { available: { type: Boolean, default: true }, hours: String },
+        tuesday: { available: { type: Boolean, default: true }, hours: String },
+        wednesday: { available: { type: Boolean, default: true }, hours: String },
+        thursday: { available: { type: Boolean, default: true }, hours: String },
+        friday: { available: { type: Boolean, default: true }, hours: String },
+        saturday: { available: { type: Boolean, default: false }, hours: String },
+        sunday: { available: { type: Boolean, default: false }, hours: String }
+    }
 });
 
 const userSchema = new mongoose.Schema({
@@ -24,12 +34,15 @@ const userSchema = new mongoose.Schema({
     barId: String,
     language: { type: String, default: 'en' },
     subscription: String,
-    lawyerProfile: lawyerProfileSchema
+    lawyerProfile: lawyerProfileSchema,
+    // NEW: Profile picture
+    profilePicture: String
 }, { timestamps: true });
 
-// Index for email lookups
 userSchema.index({ email: 1 });
 userSchema.index({ role: 1 });
+userSchema.index({ 'lawyerProfile.specialization': 1 });
+userSchema.index({ 'lawyerProfile.location': 1 });
 
 const User = mongoose.model('User', userSchema);
 

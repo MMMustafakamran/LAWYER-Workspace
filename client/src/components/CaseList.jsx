@@ -47,8 +47,8 @@ export default function CaseList() {
                 <div className="bg-white shadow overflow-hidden sm:rounded-md">
                     <ul className="divide-y divide-gray-200">
                         {cases.map((caseItem) => (
-                            <li key={caseItem.id}>
-                                <Link to={`/cases/${caseItem.id}`} className="block hover:bg-gray-50 transition-colors">
+                            <li key={caseItem._id}>
+                                <Link to={`/cases/${caseItem._id}`} className="block hover:bg-gray-50 transition-colors">
                                     <div className="px-4 py-4 sm:px-6">
                                         <div className="flex items-center justify-between">
                                             <p className="text-lg font-bold text-primary-700 truncate font-serif">{caseItem.title}</p>

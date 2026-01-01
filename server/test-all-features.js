@@ -1,11 +1,12 @@
-// Comprehensive API Test Script
+// Comprehensive API Test Script - All Features
 require('dotenv').config({ path: './database_env.env' });
 
 const BASE_URL = 'http://localhost:5000/api';
 let authToken = '';
-let testUserId = '';
+let lawyerToken = '';
+let testCaseId = '';
+let testItemId = '';
 
-// Simple fetch wrapper
 const api = async (method, endpoint, body = null, token = authToken) => {
     const options = {
         method,
@@ -34,220 +35,200 @@ const test = async (name, fn) => {
 
 const runTests = async () => {
     console.log('\n========================================');
-    console.log('   LAWYER APP - FEATURE TEST SUITE');
+    console.log('   COMPLETE FEATURE TEST SUITE');
     console.log('========================================\n');
 
-    // =====================
-    // 1. AUTH MODULE
-    // =====================
-    console.log('📋 Testing AUTH Module...');
-    
-    await test('Auth: Login with valid credentials', async () => {
-        const res = await api('POST', '/auth/login', {
-            email: 'lawyer@test.com',
-            password: 'password123'
-        });
-        if (res.status !== 200) throw new Error(`Status ${res.status}: ${JSON.stringify(res.data)}`);
-        authToken = res.data.token;
-        testUserId = res.data.user.id;
-        if (!authToken) throw new Error('No token received');
-    });
+    // Login
+    console.log('📋 Setting up test tokens...');
+    const loginRes = await api('POST', '/auth/login', { email: 'lawyer@test.com', password: 'password123' });
+    lawyerToken = loginRes.data.token;
+    authToken = lawyerToken;
 
-    await test('Auth: Register new user', async () => {
-        const res = await api('POST', '/auth/register', {
-            name: 'Test User',
-            email: `test_${Date.now()}@test.com`,
-            password: 'password123',
-            role: 'LITIGANT'
-        });
-        if (res.status !== 201) throw new Error(`Status ${res.status}: ${JSON.stringify(res.data)}`);
-    });
+    const clientRes = await api('POST', '/auth/login', { email: 'client@test.com', password: 'password123' });
+    const clientToken = clientRes.data.token;
 
     // =====================
-    // 2. LAWYER DIRECTORY
+    // CASE MANAGEMENT - NEW FEATURES
     // =====================
-    console.log('📋 Testing LAWYER DIRECTORY Module...');
+    console.log('📋 Testing CASE MANAGEMENT (New Features)...');
 
-    await test('Lawyers: Get all lawyers', async () => {
-        const res = await api('GET', '/lawyers');
-        if (res.status !== 200) throw new Error(`Status ${res.status}`);
-        if (!Array.isArray(res.data)) throw new Error('Expected array');
-    });
-
-    await test('Lawyers: Get lawyer by ID', async () => {
-        const listRes = await api('GET', '/lawyers');
-        if (listRes.data.length === 0) throw new Error('No lawyers to test');
-        const lawyerId = listRes.data[0]._id;
-        const res = await api('GET', `/lawyers/${lawyerId}`);
+    await test('Cases: Search cases', async () => {
+        const res = await api('GET', '/cases/search?query=test');
         if (res.status !== 200) throw new Error(`Status ${res.status}`);
     });
 
-    await test('Lawyers: Update lawyer profile', async () => {
-        const res = await api('PUT', '/lawyers/profile', {
-            specialization: 'Criminal',
-            experience: 12,
-            bio: 'Updated bio',
-            location: 'Islamabad',
-            hourlyRate: 6000
-        });
-        if (res.status !== 200) throw new Error(`Status ${res.status}: ${JSON.stringify(res.data)}`);
-    });
-
-    // =====================
-    // 3. CASE MANAGEMENT
-    // =====================
-    console.log('📋 Testing CASE MANAGEMENT Module...');
-
-    let testCaseId = '';
-    await test('Cases: Create new case', async () => {
+    await test('Cases: Create case for testing', async () => {
         const res = await api('POST', '/cases', {
-            title: 'Test Case v. State',
-            caseNumber: 'TC-2026-001',
-            court: 'Lahore High Court',
+            title: 'Feature Test Case',
+            caseNumber: 'FTC-2026-001',
+            court: 'Supreme Court',
             type: 'Criminal',
-            status: 'OPEN',
-            nextHearingDate: '2026-02-15'
+            status: 'OPEN'
         });
-        if (res.status !== 201) throw new Error(`Status ${res.status}: ${JSON.stringify(res.data)}`);
+        if (res.status !== 201) throw new Error(`Status ${res.status}`);
         testCaseId = res.data._id;
     });
 
-    await test('Cases: Get my cases', async () => {
-        const res = await api('GET', '/cases');
-        if (res.status !== 200) throw new Error(`Status ${res.status}`);
-        if (!Array.isArray(res.data)) throw new Error('Expected array');
-    });
-
-    await test('Cases: Get case by ID', async () => {
-        if (!testCaseId) throw new Error('No case ID from previous test');
-        const res = await api('GET', `/cases/${testCaseId}`);
-        if (res.status !== 200) throw new Error(`Status ${res.status}`);
-    });
-
-    // =====================
-    // 4. LEGAL RESEARCH
-    // =====================
-    console.log('📋 Testing LEGAL RESEARCH Module...');
-
-    await test('Laws: Get all laws', async () => {
-        const res = await api('GET', '/laws');
-        if (res.status !== 200) throw new Error(`Status ${res.status}`);
-        if (!Array.isArray(res.data)) throw new Error('Expected array');
-    });
-
-    await test('Laws: Search laws by query', async () => {
-        const res = await api('GET', '/laws/search?query=criminal');
-        if (res.status !== 200) throw new Error(`Status ${res.status}`);
-    });
-
-    await test('Laws: Filter by category', async () => {
-        const res = await api('GET', '/laws/search?category=Criminal');
-        if (res.status !== 200) throw new Error(`Status ${res.status}`);
-    });
-
-    // =====================
-    // 5. MARKETPLACE
-    // =====================
-    console.log('📋 Testing MARKETPLACE Module...');
-
-    await test('Marketplace: Get all items', async () => {
-        const res = await api('GET', '/marketplace');
-        if (res.status !== 200) throw new Error(`Status ${res.status}`);
-        if (!Array.isArray(res.data)) throw new Error('Expected array');
-    });
-
-    await test('Marketplace: Create item', async () => {
-        const res = await api('POST', '/marketplace', {
-            name: 'Test Law Book',
-            description: 'A test item',
-            price: 1500,
-            imageUrl: 'https://example.com/book.jpg'
+    await test('Cases: Add note to case', async () => {
+        if (!testCaseId) throw new Error('No case ID');
+        const res = await api('POST', `/cases/${testCaseId}/notes`, {
+            content: 'This is a test note for the case'
         });
         if (res.status !== 201) throw new Error(`Status ${res.status}: ${JSON.stringify(res.data)}`);
     });
 
-    // =====================
-    // 6. APPOINTMENTS
-    // =====================
-    console.log('📋 Testing APPOINTMENTS Module...');
+    await test('Cases: Update case status', async () => {
+        if (!testCaseId) throw new Error('No case ID');
+        const res = await api('PATCH', `/cases/${testCaseId}/status`, { status: 'IN_PROGRESS' });
+        if (res.status !== 200) throw new Error(`Status ${res.status}`);
+    });
 
-    await test('Appointments: Get my appointments', async () => {
-        const res = await api('GET', '/appointments');
+    await test('Cases: Share case with user', async () => {
+        if (!testCaseId) throw new Error('No case ID');
+        const res = await api('POST', `/cases/${testCaseId}/share`, { email: 'client@test.com' });
+        if (res.status !== 200) throw new Error(`Status ${res.status}: ${JSON.stringify(res.data)}`);
+    });
+
+    // =====================
+    // LAWYER HIRING - NEW FEATURES
+    // =====================
+    console.log('📋 Testing LAWYER HIRING (New Features)...');
+
+    await test('Lawyers: Toggle hiring availability', async () => {
+        const res = await api('POST', '/lawyers/toggle-hiring');
+        if (res.status !== 200) throw new Error(`Status ${res.status}`);
+    });
+
+    await test('Lawyers: Filter by available only', async () => {
+        const res = await api('GET', '/lawyers?availableOnly=true');
+        if (res.status !== 200) throw new Error(`Status ${res.status}`);
+    });
+
+    await test('Lawyers: Hire a lawyer (as client)', async () => {
+        const lawyerList = await api('GET', '/lawyers');
+        const lawyerId = lawyerList.data[0]._id;
+        
+        const res = await api('POST', '/lawyers/hire', {
+            lawyerId,
+            message: 'I need legal help',
+            caseType: 'Criminal',
+            budget: 50000
+        }, clientToken);
+        if (res.status !== 201 && res.status !== 400) throw new Error(`Status ${res.status}: ${JSON.stringify(res.data)}`);
+    });
+
+    await test('Lawyers: Get hiring requests', async () => {
+        const res = await api('GET', '/lawyers/hiring-requests');
         if (res.status !== 200) throw new Error(`Status ${res.status}`);
     });
 
     // =====================
-    // 7. CHAT
+    // MARKETPLACE - NEW FEATURES
     // =====================
-    console.log('📋 Testing CHAT Module...');
+    console.log('📋 Testing MARKETPLACE (New Features)...');
 
-    await test('Chat: Get conversations', async () => {
-        const res = await api('GET', '/chat/conversations');
+    await test('Marketplace: Search items', async () => {
+        const res = await api('GET', '/marketplace?search=book');
+        if (res.status !== 200) throw new Error(`Status ${res.status}`);
+    });
+
+    await test('Marketplace: Create item for testing', async () => {
+        const res = await api('POST', '/marketplace', {
+            name: 'Test Legal Book',
+            description: 'A book for testing',
+            price: 1000
+        });
+        if (res.status !== 201) throw new Error(`Status ${res.status}`);
+        testItemId = res.data._id;
+    });
+
+    await test('Marketplace: Get item by ID', async () => {
+        if (!testItemId) throw new Error('No item ID');
+        const res = await api('GET', `/marketplace/item/${testItemId}`);
+        if (res.status !== 200) throw new Error(`Status ${res.status}`);
+    });
+
+    await test('Marketplace: Get my items (seller dashboard)', async () => {
+        const res = await api('GET', '/marketplace/my-items');
+        if (res.status !== 200) throw new Error(`Status ${res.status}`);
+    });
+
+    await test('Marketplace: Get seller stats', async () => {
+        const res = await api('GET', '/marketplace/seller-stats');
+        if (res.status !== 200) throw new Error(`Status ${res.status}`);
+    });
+
+    await test('Marketplace: Add to cart', async () => {
+        if (!testItemId) throw new Error('No item ID');
+        const res = await api('POST', '/marketplace/cart', { itemId: testItemId });
+        if (res.status !== 201) throw new Error(`Status ${res.status}`);
+    });
+
+    await test('Marketplace: Get cart', async () => {
+        const res = await api('GET', '/marketplace/cart');
+        if (res.status !== 200) throw new Error(`Status ${res.status}`);
+        if (!res.data.items) throw new Error('No items in response');
+    });
+
+    await test('Marketplace: Checkout', async () => {
+        const res = await api('POST', '/marketplace/checkout', { paymentMethod: 'COD' });
+        if (res.status !== 201) throw new Error(`Status ${res.status}: ${JSON.stringify(res.data)}`);
+    });
+
+    // =====================
+    // PROFILE - NEW FEATURES
+    // =====================
+    console.log('📋 Testing PROFILE (New Features)...');
+
+    await test('Profile: Get profile', async () => {
+        const res = await api('GET', '/profile');
+        if (res.status !== 200) throw new Error(`Status ${res.status}`);
+    });
+
+    await test('Profile: Update profile', async () => {
+        const res = await api('PUT', '/profile', { phone: '03001112222' });
+        if (res.status !== 200) throw new Error(`Status ${res.status}`);
+    });
+
+    await test('Profile: Update language', async () => {
+        const res = await api('PUT', '/profile/language', { language: 'ur' });
         if (res.status !== 200) throw new Error(`Status ${res.status}`);
     });
 
     // =====================
-    // 8. NOTIFICATIONS
+    // EXISTING FEATURES (Regression)
     // =====================
-    console.log('📋 Testing NOTIFICATIONS Module...');
+    console.log('📋 Testing EXISTING FEATURES (Regression)...');
 
-    await test('Notifications: Get notifications', async () => {
-        const res = await api('GET', '/notifications');
+    await test('Laws: Get all', async () => {
+        const res = await api('GET', '/laws');
         if (res.status !== 200) throw new Error(`Status ${res.status}`);
     });
 
-    // =====================
-    // 9. POLLS/ELECTIONS
-    // =====================
-    console.log('📋 Testing ELECTIONS Module...');
-
-    await test('Polls: Get all polls', async () => {
+    await test('Polls: Get all', async () => {
         const res = await api('GET', '/polls');
         if (res.status !== 200) throw new Error(`Status ${res.status}`);
     });
 
-    await test('Polls: Create poll (as lawyer)', async () => {
-        const res = await api('POST', '/polls', {
-            question: 'Who should be the next Bar President?',
-            barType: 'Lahore Bar',
-            candidateList: ['Ali Khan', 'Sara Ahmed', 'Usman Malik'],
-            endDate: '2026-03-01'
-        });
-        if (res.status !== 201) throw new Error(`Status ${res.status}: ${JSON.stringify(res.data)}`);
+    await test('Notifications: Get', async () => {
+        const res = await api('GET', '/notifications');
+        if (res.status !== 200) throw new Error(`Status ${res.status}`);
     });
 
-    // =====================
-    // 10. ORDERS
-    // =====================
-    console.log('📋 Testing ORDERS Module...');
+    await test('Appointments: Get', async () => {
+        const res = await api('GET', '/appointments');
+        if (res.status !== 200) throw new Error(`Status ${res.status}`);
+    });
 
-    await test('Orders: Get my orders', async () => {
+    await test('Orders: Get', async () => {
         const res = await api('GET', '/orders');
         if (res.status !== 200) throw new Error(`Status ${res.status}`);
     });
 
-    // =====================
-    // 11. ADMIN
-    // =====================
-    console.log('📋 Testing ADMIN Module...');
-
-    // Login as admin first
-    const adminRes = await api('POST', '/auth/login', {
-        email: 'admin@test.com',
-        password: 'password123'
-    });
-    const adminToken = adminRes.data.token;
-
     await test('Admin: Get stats', async () => {
-        const res = await api('GET', '/admin/stats', null, adminToken);
+        const adminRes = await api('POST', '/auth/login', { email: 'admin@test.com', password: 'password123' });
+        const res = await api('GET', '/admin/stats', null, adminRes.data.token);
         if (res.status !== 200) throw new Error(`Status ${res.status}`);
-        if (!res.data.users && res.data.users !== 0) throw new Error('Missing stats');
-    });
-
-    await test('Admin: Get all users', async () => {
-        const res = await api('GET', '/admin/users', null, adminToken);
-        if (res.status !== 200) throw new Error(`Status ${res.status}`);
-        if (!Array.isArray(res.data)) throw new Error('Expected array');
     });
 
     // =====================

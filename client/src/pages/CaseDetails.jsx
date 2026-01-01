@@ -82,10 +82,10 @@ export default function CaseDetails() {
                             {caseItem.documents && caseItem.documents.length > 0 ? (
                                 <ul className="divide-y divide-gray-200">
                                     {caseItem.documents.map((doc) => (
-                                        <li key={doc.id} className="py-3 flex justify-between items-center">
+                                        <li key={doc._id} className="py-3 flex justify-between items-center">
                                             <div className="flex items-center">
                                                 <FileText className="h-5 w-5 text-gray-400 mr-2" />
-                                                <span className="text-sm font-medium text-gray-900">Document #{doc.id}</span>
+                                                <span className="text-sm font-medium text-gray-900">Document</span>
                                             </div>
                                             <a
                                                 href={`http://localhost:5000${doc.fileUrl}`}
