@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from '../api/axios';
-import { Search, MapPin, Briefcase, Star } from 'lucide-react';
+import { Search, MapPin, Briefcase, Star, CheckCircle } from 'lucide-react';
 
 export default function LawyerDirectory() {
     const [lawyers, setLawyers] = useState([]);
@@ -23,6 +23,7 @@ export default function LawyerDirectory() {
             if (filters.location) params.location = filters.location;
 
             const res = await axios.get('/lawyers', { params });
+            console.log('Lawyers Data:', res.data); // DEBUG: Check isVerified field
             setLawyers(res.data);
         } catch (error) {
             console.error('Failed to fetch lawyers', error);
@@ -87,8 +88,15 @@ export default function LawyerDirectory() {
                         <div key={lawyer._id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
                             <div className="p-6">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-xl">
-                                        {lawyer.name.charAt(0)}
+                                    <div className="relative">
+                                        <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-xl">
+                                            {lawyer.name.charAt(0)}
+                                        </div>
+                                        {lawyer.isVerified && (
+                                            <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                                                <CheckCircle className="w-4 h-4 text-blue-600 fill-white" />
+                                            </div>
+                                        )}
                                     </div>
                                     {lawyer.lawyerProfile?.rating > 0 && (
                                         <div className="flex items-center bg-yellow-50 px-2 py-1 rounded text-yellow-700 text-xs font-bold">
@@ -97,7 +105,15 @@ export default function LawyerDirectory() {
                                         </div>
                                     )}
                                 </div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-1">{lawyer.name}</h3>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <h3 className="text-lg font-bold text-gray-900">{lawyer.name}</h3>
+                                    {lawyer.isVerified && (
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                            <CheckCircle className="w-3 h-3 mr-1" />
+                                            Verified
+                                        </span>
+                                    )}
+                                </div>
                                 <p className="text-sm text-primary-600 font-medium mb-3">
                                     {lawyer.lawyerProfile?.specialization || 'General Practice'}
                                 </p>

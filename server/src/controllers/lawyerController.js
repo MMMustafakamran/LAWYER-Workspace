@@ -20,7 +20,7 @@ const getLawyers = async (req, res) => {
         }
 
         const lawyers = await User.find(filter)
-            .select('_id name email phone lawyerProfile profilePicture');
+            .select('_id name email phone isVerified lawyerProfile profilePicture');
 
         res.json(lawyers);
     } catch (error) {
@@ -33,7 +33,7 @@ const getLawyerById = async (req, res) => {
     try {
         const { id } = req.params;
         const lawyer = await User.findOne({ _id: id, role: 'LAWYER' })
-            .select('_id name email phone lawyerProfile profilePicture');
+            .select('_id name email phone isVerified lawyerProfile profilePicture');
 
         if (!lawyer) {
             return res.status(404).json({ message: 'Lawyer not found' });
