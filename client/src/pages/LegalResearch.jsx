@@ -98,7 +98,7 @@ export default function LegalResearch() {
                     ) : laws.length > 0 ? (
                         laws.map((law) => (
                             <div
-                                key={law.id}
+                                key={law._id}
                                 className="card group cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-200"
                                 onClick={() => setSelectedLaw(law)}
                             >

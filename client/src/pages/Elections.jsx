@@ -140,11 +140,11 @@ export default function Elections() {
                     <p className="text-center py-8 text-gray-500">Loading elections...</p>
                 ) : polls.length > 0 ? (
                     polls.map((poll) => {
-                        const hasVoted = poll.votes.some(v => v.userId === user.id);
+                        const hasVoted = poll.votes.some(v => String(v.userId) === String(user.id));
                         const isEnded = new Date(poll.endDate) < new Date();
 
                         return (
-                            <div key={poll.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <div key={poll._id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
@@ -184,7 +184,7 @@ export default function Elections() {
                                                 </div>
                                                 {!hasVoted && !isEnded && (
                                                     <button
-                                                        onClick={() => handleVote(poll.id, candidate)}
+                                                        onClick={() => handleVote(poll._id, candidate)}
                                                         className="text-sm text-accent-600 hover:text-accent-700 font-medium"
                                                     >
                                                         Vote for {candidate}

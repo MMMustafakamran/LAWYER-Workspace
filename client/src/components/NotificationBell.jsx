@@ -11,7 +11,7 @@ export default function NotificationBell() {
 
     const handleNotificationClick = async (notification) => {
         if (!notification.isRead) {
-            await markAsRead(notification.id);
+            await markAsRead(notification._id);
         }
         setShowDropdown(false);
 
@@ -55,7 +55,7 @@ export default function NotificationBell() {
         try {
             await axios.put(`/notifications/${id}/read`);
             setNotifications(notifications.map(n =>
-                n.id === id ? { ...n, isRead: true } : n
+                n._id === id ? { ...n, isRead: true } : n
             ));
         } catch (error) {
             console.error('Failed to mark as read', error);
@@ -87,7 +87,7 @@ export default function NotificationBell() {
                         {notifications.length > 0 ? (
                             notifications.map((notification) => (
                                 <div
-                                    key={notification.id}
+                                    key={notification._id}
                                     className={`px-4 py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors cursor-pointer ${!notification.isRead ? 'bg-blue-50' : ''
                                         }`}
                                     onClick={() => handleNotificationClick(notification)} // Updated onClick
