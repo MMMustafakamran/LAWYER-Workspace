@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from '../api/axios';
 import { ShoppingBag, Plus, Tag, ShoppingCart, X, CreditCard, Trash2 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Marketplace() {
+    const { user } = useAuth();
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
@@ -13,6 +15,8 @@ export default function Marketplace() {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isCheckingOut, setIsCheckingOut] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('COD'); // Default to COD
+
+    const isAdmin = user?.role === 'SYSTEM_ADMIN' || user?.role === 'SUPER_ADMIN';
 
     useEffect(() => {
         fetchItems();
@@ -39,6 +43,17 @@ export default function Marketplace() {
             fetchItems();
         } catch (error) {
             console.error('Failed to create item', error);
+        }
+    };
+
+    const handleDeleteItem = async (itemId) => {
+        if (!confirm('Are you sure you want to delete this item?')) return;
+        try {
+            await axios.delete(`/marketplace/${itemId}`);
+            fetchItems();
+        } catch (error) {
+            console.error('Failed to delete item', error);
+            alert('Failed to delete item');
         }
     };
 
@@ -285,13 +300,24 @@ export default function Marketplace() {
                                         <Tag className="w-3 h-3 mr-1" />
                                         {item.seller?.name || 'Unknown Seller'}
                                     </span>
-                                    <button
-                                        onClick={() => addToCart(item)}
-                                        disabled={cart.some(cartItem => cartItem._id === item._id)}
-                                        className={`text-sm font-medium ${cart.some(cartItem => cartItem._id === item._id) ? 'text-green-600 cursor-default' : 'text-accent-600 hover:text-accent-700'}`}
-                                    >
-                                        {cart.some(cartItem => cartItem._id === item._id) ? 'Added to Cart' : 'Add to Cart'}
-                                    </button>
+                                    <div className="flex items-center gap-2">
+                                        {isAdmin && (
+                                            <button
+                                                onClick={() => handleDeleteItem(item._id)}
+                                                className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors"
+                                                title="Delete Item"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => addToCart(item)}
+                                            disabled={cart.some(cartItem => cartItem._id === item._id)}
+                                            className={`text-sm font-medium ${cart.some(cartItem => cartItem._id === item._id) ? 'text-green-600 cursor-default' : 'text-accent-600 hover:text-accent-700'}`}
+                                        >
+                                            {cart.some(cartItem => cartItem._id === item._id) ? 'Added' : 'Add to Cart'}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

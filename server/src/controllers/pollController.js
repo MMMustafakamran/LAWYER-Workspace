@@ -82,8 +82,34 @@ const vote = async (req, res) => {
     }
 };
 
+const deletePoll = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Only admins can delete polls
+        if (req.user.role !== 'SYSTEM_ADMIN' && req.user.role !== 'SUPER_ADMIN') {
+            return res.status(403).json({ message: 'Not authorized to delete polls' });
+        }
+
+        const poll = await Poll.findById(id);
+        if (!poll) {
+            return res.status(404).json({ message: 'Poll not found' });
+        }
+
+        // Delete all associated votes
+        await Vote.deleteMany({ pollId: id });
+        await poll.deleteOne();
+
+        res.json({ message: 'Poll deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 module.exports = {
     createPoll,
     getPolls,
-    vote
+    vote,
+    deletePoll
 };

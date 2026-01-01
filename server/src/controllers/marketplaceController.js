@@ -109,7 +109,11 @@ const deleteItem = async (req, res) => {
             return res.status(404).json({ message: 'Item not found' });
         }
 
-        if (item.sellerId.toString() !== req.user.id) {
+        // Allow owner OR admin to delete
+        const isOwner = item.sellerId.toString() === req.user.id;
+        const isAdmin = req.user.role === 'SYSTEM_ADMIN' || req.user.role === 'SUPER_ADMIN';
+        
+        if (!isOwner && !isAdmin) {
             return res.status(403).json({ message: 'Not authorized' });
         }
 

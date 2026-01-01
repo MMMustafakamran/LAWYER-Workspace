@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from '../api/axios';
-import { Vote, CheckCircle, BarChart2, Plus } from 'lucide-react';
+import { Vote, CheckCircle, BarChart2, Plus, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Elections() {
@@ -14,6 +14,8 @@ export default function Elections() {
         candidateList: '',
         endDate: ''
     });
+
+    const isAdmin = user?.role === 'SYSTEM_ADMIN' || user?.role === 'SUPER_ADMIN';
 
     useEffect(() => {
         fetchPolls();
@@ -53,6 +55,18 @@ export default function Elections() {
         } catch (error) {
             console.error('Failed to vote', error);
             alert(error.response?.data?.message || 'Failed to cast vote');
+        }
+    };
+
+    const handleDelete = async (pollId) => {
+        if (!confirm('Are you sure you want to delete this election? This cannot be undone.')) return;
+        try {
+            await axios.delete(`/polls/${pollId}`);
+            fetchPolls();
+            alert('Election deleted successfully');
+        } catch (error) {
+            console.error('Failed to delete poll', error);
+            alert(error.response?.data?.message || 'Failed to delete election');
         }
     };
 
@@ -162,7 +176,18 @@ export default function Elections() {
                                             Ends: {new Date(poll.endDate).toLocaleDateString()} • Total Votes: {poll.totalVotes}
                                         </p>
                                     </div>
-                                    <Vote className="h-8 w-8 text-gray-300" />
+                                    <div className="flex items-center gap-2">
+                                        <Vote className="h-8 w-8 text-gray-300" />
+                                        {isAdmin && (
+                                            <button
+                                                onClick={() => handleDelete(poll._id)}
+                                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                title="Delete Election"
+                                            >
+                                                <Trash2 className="w-5 h-5" />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="space-y-3">

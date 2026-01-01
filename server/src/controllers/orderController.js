@@ -10,9 +10,9 @@ const createOrder = async (req, res) => {
 
         // Create order with embedded items
         const orderItems = items.map(item => ({
-            itemId: item.id,
+            itemId: item._id || item.id, // Support both MongoDB _id and fallback
             quantity: 1,
-            price: item.price
+            price: parseFloat(item.price)
         }));
 
         const order = await Order.create({
